@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+html,body,#root { height:100%; }
+body { margin:0; }
+.app-root { min-height:100%; }
+.app-main > *:last-child { margin-bottom:0 !important; }
+/* Neutralise marges verticales finales */
+.app-main section:last-child,
+.app-main article:last-child,
+.app-main div:last-child { margin-bottom:0 !important; }
