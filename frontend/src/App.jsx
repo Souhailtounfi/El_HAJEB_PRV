@@ -15,6 +15,7 @@ import ApercuHistorique from "./pages/ApercuHistorique";
 import SituationGeographique from "./pages/SituationGeographique";
 import OrganisationAdministrative from "./pages/OrganisationAdministrative";
 import MilieuNaturel from "./pages/MilieuNaturel";
+import SuperficiePopulation from "./pages/SuperficiePopulation";
 import "./styles/mobile-fixes.css";
 
 function App() {
@@ -61,6 +62,10 @@ function App() {
               <Route
                 path="/presentation-generale/milieu-naturel"
                 element={<MilieuNaturel />}
+              />
+              <Route
+                path="/presentation-generale/superficie-population"
+                element={<SuperficiePopulation />}
               />
 
               {/* Admin Routes */}
