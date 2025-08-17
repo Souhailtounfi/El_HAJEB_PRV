@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 /**
@@ -38,10 +38,10 @@ function Card({ title, children, theme, accent }) {
 /* Animated city metrics */
 function CityPulse({ lang, theme }) {
   const data = [
-    { k: lang === "ar" ? "السكان" : "Population", v: "130K", t: "pop" },
-    { k: lang === "ar" ? "المساحة" : "Superficie", v: "2.2K km²", t: "area" },
+    { k: lang === "ar" ? "السكان" : "Population", v: "267K", t: "pop" },
+    { k: lang === "ar" ? "المساحة" : "Superficie", v: "2193 km²", t: "area" },
     { k: lang === "ar" ? "الارتفاع" : "Altitude", v: "1050m", t: "alt" },
-    { k: lang === "ar" ? "مؤشر نمو" : "Indice Croissance", v: "+4.2%", t: "growth" },
+    { k: lang === "ar" ? "معدل نمو" : "Croissance", v: "+0.8%", t: "growth" },
   ];
   return (
     <Card
@@ -115,6 +115,13 @@ function QuickNav({ lang, slug, theme }) {
     ],
     "presentation-generale": [
       { id: "description", fr: "Contenu", ar: "المحتوى" },
+    ],
+    "superficie-population": [
+      { id: "intro", fr: "Intro", ar: "مقدمة" },
+      { id: "table-communes", fr: "Communes", ar: "الجماعات" },
+      { id: "evolution", fr: "Évolution", ar: "التطور" },
+      { id: "pyramide-age", fr: "Pyramide", ar: "هرم" },
+      { id: "structure-age", fr: "Structure", ar: "البنية" },
     ],
   };
   const list = map[slug] || [];

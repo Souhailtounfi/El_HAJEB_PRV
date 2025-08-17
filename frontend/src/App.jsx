@@ -16,6 +16,7 @@ import SituationGeographique from "./pages/SituationGeographique";
 import OrganisationAdministrative from "./pages/OrganisationAdministrative";
 import MilieuNaturel from "./pages/MilieuNaturel";
 import SuperficiePopulation from "./pages/SuperficiePopulation";
+import ReseauRoutier from "./pages/ReseauRoutier";
 import "./styles/mobile-fixes.css";
 
 function App() {
@@ -66,6 +67,10 @@ function App() {
               <Route
                 path="/presentation-generale/superficie-population"
                 element={<SuperficiePopulation />}
+              />
+              <Route
+                path="/infrastructures-base/reseau-routier"
+                element={<ReseauRoutier />}
               />
 
               {/* Admin Routes */}

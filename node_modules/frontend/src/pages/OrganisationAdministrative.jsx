@@ -69,53 +69,46 @@ export default function OrganisationAdministrative() {
   const t = isAr ? ar : fr;
 
   return (
-    <div className="pg-shell geo-static-shell" dir={dir}>
+    <div className="org-responsive" dir={dir}>
       <OrgStyle />
-      <div className="geo-layout">
-        <main className="geo-main">
-          <header className="geo-head">
-            <h1 className="geo-title">{t.title}</h1>
-            <div className="geo-sep" />
-          </header>
-          <article
-            className="geo-article"
-            dir={dir}
-            id="organisation-administrative"
-          >
-            <ul className="org-list">
-              {t.list.map((li, i) => (
-                <li key={i}>{li}</li>
-              ))}
-            </ul>
-            <h2 className="geo-sub org-sub">{t.repTitle}</h2>
-            <div className="org-table-wrapper">
-              <table className="org-table" dir={dir}>
-                <caption className="sr-only">
-                  {isAr
-                    ? "جدول يمثل أعداد الفئات في الهيئات والمؤسسات"
-                    : "Table showing counts for each institutional representation category"}
-                </caption>
-                <thead>
-                  <tr>
-                    <th>{isAr ? "الفئة" : "Catégorie"}</th>
-                    <th>{isAr ? "العدد" : "Nombre"}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {t.table.map((r, i) => (
-                    <tr key={i}>
-                      <td data-label={isAr?"الفئة":"Catégorie"}>{r[0]}</td>
-                      <td className="num" data-label={isAr?"العدد":"Nombre"}>{r[1]}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* Mobile layout */}
+      <div className="org-mobile-shell">
+        <header className="org-m-head"><h1 className="org-m-title">{t.title}</h1></header>
+        <main className="org-m-main">
+          <section className="org-m-card">
+            <ul className="org-m-list">{t.list.map((li,i)=><li key={i}>{li}</li>)}</ul>
+          </section>
+          <section className="org-m-card">
+            <h2 className="org-m-sub">{t.repTitle}</h2>
+            <div className="org-m-grid">
+              {t.table.map((r,i)=><div key={i} className="org-m-item"><div className="k">{r[0]}</div><div className="v">{r[1]}</div></div>)}
             </div>
-          </article>
+          </section>
         </main>
-        <aside className="geo-side">
-          <PageSidebar lang={lang} slug={SLUG} theme="light" />
-        </aside>
+        <aside className="org-m-sidebar"><PageSidebar lang={lang} slug={SLUG} theme="light" /></aside>
+      </div>
+      {/* Desktop layout */}
+      <div className="pg-shell geo-static-shell org-desktop-shell">
+        <div className="geo-layout">
+          <main className="geo-main">
+            <header className="geo-head">
+              <h1 className="geo-title">{t.title}</h1>
+              <div className="geo-sep" />
+            </header>
+            <article className="geo-article" dir={dir} id="organisation-administrative">
+              <ul className="org-list">{t.list.map((li,i)=><li key={i}>{li}</li>)}</ul>
+              <h2 className="geo-sub org-sub">{t.repTitle}</h2>
+              <div className="org-table-wrapper">
+                <table className="org-table" dir={dir}>
+                  <caption className="sr-only">{isAr?"جدول يمثل أعداد الفئات في الهيئات والمؤسسات":"Table showing counts for each institutional representation category"}</caption>
+                  <thead><tr><th>{isAr?"الفئة":"Catégorie"}</th><th>{isAr?"العدد":"Nombre"}</th></tr></thead>
+                  <tbody>{t.table.map((r,i)=><tr key={i}><td data-label={isAr?"الفئة":"Catégorie"}>{r[0]}</td><td className="num" data-label={isAr?"العدد":"Nombre"}>{r[1]}</td></tr>)}</tbody>
+                </table>
+              </div>
+            </article>
+          </main>
+          <aside className="geo-side"><PageSidebar lang={lang} slug={SLUG} theme="light" /></aside>
+        </div>
       </div>
     </div>
   );
@@ -124,9 +117,30 @@ export default function OrganisationAdministrative() {
 function OrgStyle() {
   return (
     <style>{`
+  /* Mobile shell */
+  .org-mobile-shell{display:grid;gap:1rem;padding:calc(var(--header-height,64px) + 1rem) .85rem 3.5rem;background:linear-gradient(140deg,#ffffff,#f1fdf7 60%,#e8fbf2);} 
+  .org-m-head{text-align:center;}
+  .org-m-title{margin:0;font-size:clamp(1.55rem,6.5vw,2.8rem);font-weight:800;line-height:1.05;background:linear-gradient(90deg,#065f46,#10b981,#0ea5e9 65%,#6366f1);-webkit-background-clip:text;color:transparent;}
+  .org-m-main{display:flex;flex-direction:column;gap:1rem;max-width:980px;margin:0 auto;}
+  .org-m-card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;padding:1rem .95rem 1.15rem;box-shadow:0 4px 12px -4px rgba(0,0,0,.08);}
+  .org-m-list{margin:0;padding-inline-start:1.15rem;display:grid;gap:.55rem;font-size:.95rem;line-height:1.55;font-weight:500;color:#1f2937;}
+  [dir='rtl'] .org-m-list{padding-inline-start:0;padding-inline-end:1.1rem;}
+  .org-m-list li::marker{color:#10b981;font-weight:700;}
+  .org-m-sub{margin:0 0 .7rem;font-size:1.05rem;font-weight:800;color:#065f46;}
+  .org-m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.55rem;}
+  .org-m-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.8rem;padding:.55rem .6rem .6rem;display:flex;flex-direction:column;gap:.35rem;}
+  .org-m-item .k{font-size:.62rem;font-weight:600;letter-spacing:.05em;color:#047857;text-transform:uppercase;}
+  .org-m-item .v{font-size:.9rem;font-weight:700;color:#111827;}
+  .org-m-sidebar{max-width:980px;margin:0 auto;width:100%;}
+  /* Hide desktop shell by default */
+  .org-desktop-shell{display:none;}
+  @media (min-width:1200px){
+    .org-mobile-shell{display:none;}
+    .org-desktop-shell{display:block;}
+  }
   .pg-shell.geo-static-shell {
     min-height: 100vh;
-    padding: 4.5rem clamp(1rem,3vw,3rem) 6rem;
+  padding: 4.5rem clamp(1rem,3vw,3rem) 6rem;
     background: 
         radial-gradient(circle at 12% 18%,#ecfdf5,transparent 65%),
       radial-gradient(circle at 85% 82%,#d1fae5,transparent 70%),
@@ -144,9 +158,7 @@ function OrgStyle() {
       grid-template-columns: minmax(0,1fr) 330px;
     }
   }
-  .geo-head {
-    margin: 0 0 1.6rem;
-  }
+  .geo-head {margin:0 0 1.8rem;}
   .geo-title {
     margin: 0;
     font-size: clamp(2.2rem,4.5vw,3.25rem);
@@ -171,16 +183,7 @@ function OrgStyle() {
     padding: clamp(1.5rem,2.4vw,2.7rem);
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   }
-  .org-list {
-    margin: 0 0 2.2rem;
-    padding-inline-start: 1.2rem;
-    display: grid;
-    gap: .65rem;
-    font-size: 1rem;
-    line-height: 1.58;
-    font-weight: 500;
-    color: #1f2937;
-  }
+  .org-list {margin:0 0 2.2rem;padding-inline-start:1.15rem;display:grid;gap:.6rem;font-size:1rem;line-height:1.6;font-weight:500;color:#1f2937;}
   [dir='rtl'] .org-list {
     padding-inline-start: 0;
     padding-inline-end: 1.2rem;
@@ -197,35 +200,27 @@ function OrgStyle() {
     -webkit-background-clip: text;
     color: transparent;
   }
-  .org-table-wrapper {overflow-x:auto;position:relative;border-radius:1.25rem;background:#ffffff;border:1px solid #e5e7eb;box-shadow:0 4px 12px -4px rgba(0,0,0,.08);} 
-  .org-table{width:100%;border-collapse:collapse;min-width:520px;font-size:.82rem;}
-  .org-table thead th{background:#06604a;color:#ffffff;text-align:start;padding:.85rem 1rem;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;border-bottom:2px solid #059669;}
-  [dir='rtl'] .org-table thead th {
-    text-align: right;
-  }
-  .org-table tbody td{padding:.75rem 1rem;font-weight:600;color:#1f2937;border-bottom:1px solid #f1f5f9;background:#ffffff;transition:background .15s ease,color .15s ease;}
-  .org-table tbody tr:nth-child(odd) td{background:#f9fafb;}
-  .org-table tbody tr:hover td{background:#ecfdf5;}
-  .org-table td.num{text-align:center;font-weight:700;color:#047857;min-width:70px;}
-  .org-table thead th:first-child {border-top-left-radius:1rem;}
-  .org-table thead th:last-child {border-top-right-radius:1rem;}
-  [dir='rtl'] .org-table thead th:first-child {border-top-right-radius:1rem;border-top-left-radius:0;}
-  [dir='rtl'] .org-table thead th:last-child {border-top-left-radius:1rem;border-top-right-radius:0;}
-  .org-table tbody tr:last-child td:first-child {border-bottom-left-radius:1rem;}
-  .org-table tbody tr:last-child td:last-child {border-bottom-right-radius:1rem;}
-  .org-table td[data-label]::before{display:none;} /* remove mobile label overlay for desktop */
-  /* Mobile: simple stacked labels */
-  @media (max-width:640px){
-    .org-table{min-width:0;font-size:.78rem;}
+  .org-table-wrapper{overflow-x:auto;position:relative;border-radius:1.1rem;background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 70%);border:1px solid #e2e8f0;box-shadow:0 4px 14px -4px rgba(0,0,0,.08);padding:1rem;margin:0 0 1.4rem;}
+  .org-table{width:100%;border-collapse:collapse;font-size:.76rem;min-width:520px;}
+  .org-table th,.org-table td{border:1px solid #d4d4d8;padding:.55rem .7rem;text-align:start;}
+  [dir='rtl'] .org-table th,[dir='rtl'] .org-table td{text-align:right;}
+  .org-table th{background:#065f46;color:#ecfdf5;font-weight:800;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;}
+  .org-table tbody tr:nth-child(even){background:#f9fafb;}
+  .org-table tbody tr:hover{background:#ecfdf5;}
+  .org-table td.num{font-weight:700;color:#047857;text-align:center;}
+  .org-table td[data-label]::before{display:none;}
+  @media (max-width:680px){
+    .org-table{min-width:0;border:0;font-size:.74rem;}
     .org-table thead{display:none;}
-    .org-table,.org-table tbody,.org-table tr,.org-table td{display:block;width:100%;}
-    .org-table tr{background:#ffffff;margin:0 0 .9rem;border:1px solid #e2e8f0;border-radius:1rem;padding:.65rem .85rem;box-shadow:0 2px 4px -2px rgba(0,0,0,.08);}    
-    .org-table td{background:transparent !important;border:none;padding:.35rem 0 !important;display:flex;justify-content:space-between;align-items:center;}
-    .org-table td::before{content:attr(data-label);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:#065f46;opacity:.75;margin-inline-end:.75rem;}
+    .org-table tbody tr{display:grid;border:1px solid #d1d5db;border-radius:.9rem;padding:.5rem .75rem .55rem;margin-bottom:.85rem;background:#fff;box-shadow:0 2px 6px -2px rgba(0,0,0,.08);} 
+    .org-table tbody tr:last-child{margin-bottom:0;}
+    .org-table td{border:0 !important;padding:.32rem 0;display:flex;gap:.55rem;font-size:.66rem;align-items:flex-start;}
+    .org-table td::before{content:attr(data-label);flex:0 0 44%;font-weight:600;color:#065f46;font-size:.6rem;line-height:1.25;}
     [dir='rtl'] .org-table td{flex-direction:row-reverse;}
-    .org-table td.num{justify-content:space-between;text-align:start;}
+    .org-table td.num{justify-content:flex-start;}
   }
-  @media (max-width:900px){.pg-shell.geo-static-shell{padding:4.5rem 1rem 5rem;} .geo-article{padding:1.4rem 1.2rem 1.9rem;} .org-table{font-size:.75rem;min-width:560px;}}
+  @media (max-width:900px){.pg-shell.geo-static-shell{padding:4.5rem 1rem 5rem;} .geo-article{padding:1.4rem 1.2rem 1.9rem;} .org-table{font-size:.72rem;min-width:560px;} .geo-head{margin-bottom:1.4rem;} }
+  @media (max-width:480px){.org-list{font-size:.9rem;} .geo-title{font-size:clamp(1.9rem,8vw,2.4rem);} }
   @media (prefers-color-scheme:dark){
     .org-table-wrapper{background:#0f2220;border-color:#1e3a35;box-shadow:0 4px 18px -6px rgba(0,0,0,.55);} 
     .org-table thead th{background:#065f46;border-bottom-color:#047857;color:#ecfdf5;}

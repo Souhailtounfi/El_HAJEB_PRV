@@ -46,10 +46,10 @@ export default function FuturisticNavbar() {
 
   const fixedWrapRef = useRef(null);
   const desktopNavRef = useRef(null);
-  const mobileMenuRef = useRef(null);              // ADDED
+  const mobileMenuRef = useRef(null);              // mobile side panel ref
   const hoverTimer = useRef(null); // desktop hover open delay
   const leaveTimer = useRef(null); // desktop hover close delay
-  const [mobileHeight,setMobileHeight]=useState(0); // ADDED
+  // removed old expanding height logic (side panel now fixed)
 
   const buildGroups = useCallback(() => {
     const isAr = lang.startsWith("ar");
@@ -173,18 +173,15 @@ export default function FuturisticNavbar() {
     }
   },[mobileOpen]);
 
-  // Dynamic mobile menu height for smooth expand (instead of fixed 82vh)
+  // ESC close + focus management for side panel
   useEffect(()=>{
-    if(mobileOpen){
-      requestAnimationFrame(()=>{
-        if(mobileMenuRef.current){
-          setMobileHeight(mobileMenuRef.current.scrollHeight);
-        }
-      });
-    } else {
-      setMobileHeight(0);
-    }
-  },[mobileOpen, openGroup, lang]);
+    if(!mobileOpen) return;
+    const onKey = (e)=>{ if(e.key==='Escape') setMobileOpen(false); };
+    document.addEventListener('keydown', onKey);
+    // focus panel for accessibility
+    requestAnimationFrame(()=>{ mobileMenuRef.current?.focus(); });
+    return ()=> document.removeEventListener('keydown', onKey);
+  },[mobileOpen]);
 
   // Normalize accordion toggle (prevent rapid double-close)
   const toggleGroupMobile = (key)=>{
@@ -541,21 +538,61 @@ export default function FuturisticNavbar() {
           }
         }
 
-        /* MOBILE MENU REVISED */
-        .mobile-menu-transition{
-          overflow:hidden;
-          transition:max-height .45s cubic-bezier(.4,0,.2,1), opacity .35s;
-        }
-        .mobile-menu-panel{
-          background:#ffffffF2;
-          backdrop-filter:blur(14px) saturate(160%);
-          -webkit-backdrop-filter:blur(14px) saturate(160%);
-          border:1px solid #10b98133;
-          border-radius:1.4rem;
-          box-shadow:0 8px 28px -10px rgba(0,0,0,.25);
+        /* NEW FLOATING FAB + SIDE PANEL (FUTURISTIC) */
+        @media (max-width:1023px){
+          .mob-fab{
+            position:relative;z-index:10; /* sits within navbar row */
+            width:46px;height:46px;border-radius:50%;
+            background:linear-gradient(145deg,#10b981,#059669 55%,#047857);
+            box-shadow:0 6px 18px -6px rgba(4,120,87,.55),0 0 0 1px #34d399 inset,0 0 0 2px rgba(16,185,129,.25);
+            color:#fff;display:flex;align-items:center;justify-content:center;
+            border:none;cursor:pointer;transition:transform .55s cubic-bezier(.68,-0.01,.25,1), box-shadow .5s, background .6s;
+            overflow:hidden;backdrop-filter:blur(4px) saturate(160%);
+          }
+          .mob-fab:active{transform:scale(.9);} 
+          .mob-fab:hover{box-shadow:0 14px 34px -6px rgba(6,95,70,.6),0 0 0 1px #6ee7b7 inset,0 0 0 3px rgba(16,185,129,.35);}
+          .mob-fab svg{width:30px;height:30px;transition:transform .55s cubic-bezier(.68,-0.01,.25,1);} 
+          .mob-fab[data-open="true"] svg.hamb{transform:scale(0) rotate(90deg);}
+          .mob-fab svg.close{position:absolute;opacity:0;transform:scale(.4) rotate(-90deg);}
+          .mob-fab[data-open="true"] svg.close{opacity:1;transform:scale(1) rotate(0deg);transition:opacity .45s .1s, transform .6s .05s cubic-bezier(.68,-0.01,.3,1);} 
+          .mob-fab:focus-visible{outline:3px solid #6ee7b7;outline-offset:3px;}
+          /* overlay */
+          .mob-overlay{position:fixed;inset:0;background:linear-gradient(115deg,rgba(2,44,34,.85),rgba(6,95,70,.85));backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);z-index:6000;opacity:0;pointer-events:none;transition:opacity .45s;}
+          .mob-overlay.open{opacity:1;pointer-events:auto;}
+          /* panel */
+          .mob-panel{position:fixed;top:0;bottom:0;${dir==="rtl"?"right":"left"}:0;width:78%;max-width:360px;z-index:6030;display:flex;flex-direction:column;outline:none;border:none;padding:1.15rem .95rem 1.75rem;overflow-y:auto;scrollbar-width:none;}
+          .mob-panel::-webkit-scrollbar{display:none;}
+          .mob-panel-outer{position:fixed;inset:0;pointer-events:none;z-index:6030;}
+          .mob-panel-shell{position:absolute;top:0;bottom:0;${dir==="rtl"?"right":"left"}:0;width:78%;max-width:360px;pointer-events:auto;}
+          .mob-panel-glass{position:absolute;inset:0;border-radius:0 1.4rem 1.4rem 0;${dir==="rtl"?"border-radius:1.4rem 0 0 1.4rem;":""}background:linear-gradient(140deg,rgba(255,255,255,.72),rgba(240,253,244,.55) 55%,rgba(209,250,229,.6));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid #10b98144;box-shadow:0 18px 48px -16px rgba(0,0,0,.35),0 0 0 1px rgba(16,185,129,.35);}
+          .mob-panel-anim{position:absolute;inset:0;transform:translateX(${dir==="rtl"?"100%":"-100%"});opacity:0;transition:transform .65s cubic-bezier(.68,-0.01,.22,1), opacity .5s .05s;} 
+          .mob-panel-anim.open{transform:translateX(0);opacity:1;}
+          .mob-section{position:relative;padding-top:.25rem;}
+          .mob-accord{border:1px solid #10b98133;border-radius:1.1rem;overflow:hidden;margin-bottom:.9rem;background:#f0fdf4;box-shadow:0 4px 14px -8px rgba(0,0,0,.18);} 
+          .mob-accord-btn{width:100%;display:flex;align-items:center;justify-content:space-between;font-size:.66rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.9rem 1rem;cursor:pointer;background:linear-gradient(120deg,#059669,#10b981);color:#fff;transition:filter .35s;}
+          .mob-accord-btn.collapsed{background:linear-gradient(120deg,#d1fae5,#ecfdf5);color:#065f46;}
+          .mob-accord-btn:hover{filter:brightness(1.05);} 
+          .mob-accord-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .5s cubic-bezier(.68,-0.01,.22,1),opacity .35s;}
+          .mob-accord-body.open{max-height:1000px;opacity:1;} /* large cap to accommodate content */
+          .mob-accord-list{padding:.55rem .65rem .9rem;display:flex;flex-direction:column;gap:.4rem;}
+          .mob-accord-list a{padding:.55rem .8rem;border-radius:.8rem;font-size:.66rem;font-weight:600;text-decoration:none;color:#065f46;background:rgba(16,185,129,.08);transition:.35s;} 
+          .mob-accord-list a:hover{background:#10b98122;} 
+          .mob-accord-list a.active{background:#10b981;color:#fff;box-shadow:0 4px 14px -8px rgba(0,0,0,.35);} 
+          .mob-divider{height:1px;background:linear-gradient(90deg,transparent,#10b98155,transparent);margin:1rem 0;} 
+          .mob-grid-actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.65rem;margin-top:.4rem;} 
+          .mob-grid-actions a,.mob-grid-actions button{font-size:.66rem;font-weight:700;letter-spacing:.05em;padding:.75rem .8rem;border-radius:1rem;text-align:center;background:#ecfdf5;color:#065f46;box-shadow:0 4px 14px -8px rgba(0,0,0,.15);transition:.35s;border:1px solid #10b98122;} 
+          .mob-grid-actions a:hover,.mob-grid-actions button:hover{background:#10b981;color:#fff;} 
+          .mob-grid-actions a.active{background:#10b981;color:#fff;}
+          .mob-lang{display:flex;align-items:center;justify-content:center;gap:.9rem;margin-top:.6rem;}
+          .mob-lang button{flex:1;padding:.75rem 0;border-radius:2rem;font-size:.7rem;font-weight:800;letter-spacing:.08em;background:#ecfdf5;color:#065f46;transition:.35s;border:1px solid #10b98133;}
+          .mob-lang button.active{background:#10b981;color:#fff;box-shadow:0 4px 14px -8px rgba(0,0,0,.35);} 
+          .mob-lang button:hover:not(.active){background:#d1fae5;}
+          .mob-close-btn{position:absolute;top:.55rem;${dir==="rtl"?"left":"right"}:.55rem;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(16,185,129,.15);border:1px solid #10b98155;color:#065f46;cursor:pointer;backdrop-filter:blur(6px) saturate(160%);-webkit-backdrop-filter:blur(6px) saturate(160%);transition:.35s;}
+          .mob-close-btn:hover{background:#10b981;color:#fff;}
+          .mob-close-btn svg{width:20px;height:20px;}
         }
         @media (min-width:1024px){
-          .mobile-menu-transition{display:none;}
+          .mob-fab,.mob-overlay,.mob-panel-outer{display:none;}
         }
       `}</style>
 
@@ -722,156 +759,102 @@ export default function FuturisticNavbar() {
                 >AR</button>
               </div>
 
-              {/* Mobile toggle (shown only <1024px) */}
-              <button
-                onClick={() => setMobileOpen(o => !o)}
-                className="mobile-area nav-btn h-10 w-10 bg-white/90 text-green-700 hover:bg-white shadow ml-auto"
-                aria-label="Menu"
-                aria-expanded={mobileOpen}
-                aria-controls="mobileNavPanel"                     // ADDED
-              >
-                {mobileOpen ? (
-                  <svg className="w-5 h-5" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+              {/* Mobile menu button inside navbar row */}
+              <div className="flex lg:hidden ms-auto">
+                <button
+                  type="button"
+                  aria-label={mobileOpen ? (lang.startsWith('ar')? 'إغلاق القائمة':'Fermer le menu') : (lang.startsWith('ar')? 'فتح القائمة':'Ouvrir le menu')}
+                  className="mob-fab"
+                  data-open={mobileOpen? 'true':'false'}
+                  onClick={()=> setMobileOpen(o=>!o)}
+                >
+                  <svg className="hamb" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h10" />
                   </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg className="close" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
                   </svg>
-                )}
-              </button>
-            </div>
-
-            {/* Mobile menu (REWRITTEN) */}
-            <div
-              className="mobile-menu-transition mobile-area mb-3"
-              style={{maxHeight: mobileHeight, opacity: mobileOpen?1:0}}
-            >
-              <div
-                id="mobileNavPanel"
-                ref={mobileMenuRef}
-                className="mobile-menu-panel p-4 grid gap-4"
-                role="dialog"
-                aria-modal="true"
-              >
-                {groups.map(g => {
-                  const open = openGroup === g.key;
-                  return (
-                    <div key={g.key} className="rounded-2xl border border-green-200 overflow-hidden">
-                      <button
-                        type="button"
-                        onClick={() => toggleGroupMobile(g.key)}   // CHANGED
-                        className={`w-full text-left px-4 py-3 text-[11px] font-bold uppercase tracking-wide flex items-center justify-between ${
-                          open ? "bg-green-600 text-white" : "text-green-800 bg-green-50"
-                        }`}
-                        aria-expanded={open}
-                        aria-controls={`mob-group-${g.key}`}
-                      >
-                        <span>{g.label}</span>
-                        <svg
-                          className={`w-4 h-4 transition-transform ${open?"rotate-180":""}`}
-                          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                        ><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                      </button>
-                      <div
-                        id={`mob-group-${g.key}`}
-                        className="grid transition-all"
-                        style={{gridTemplateRows: open?'1fr':'0fr', transition:'grid-template-rows .45s'}}
-                      >
-                        <ul className="overflow-hidden flex flex-col gap-1 pb-3 pt-2 px-3">
-                          {g.items.map(i => (
-                            <li key={i.to}>
-                              <NavLink
-                                to={i.to}
-                                onClick={() => { setMobileOpen(false); setOpenGroup(null); }}
-                                className={({ isActive }) =>
-                                  `flex items-center gap-2 rounded-xl px-3 py-2 text-xs ${
-                                    isActive ? "bg-green-600 text-white" : "text-green-700 hover:bg-green-100"
-                                  }`
-                                }
-                              >
-                                {i.label}
-                              </NavLink>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* unchanged parts below except removed conditional mobileOpen wrapper */}
-                {/* Singles / admin / logout */}
-                <div className="flex flex-wrap gap-2">
-                  {singles.map(s => (
-                    <NavLink
-                      key={s.to}
-                      to={s.to}
-                      onClick={() => setMobileOpen(false)}
-                      className={({ isActive }) =>
-                        `flex-1 min-w-[120px] text-center px-3 py-3 rounded-2xl text-sm font-semibold ${
-                          isActive
-                            ? "bg-green-600 text-white shadow"
-                            : "bg-green-100 text-green-800 hover:bg-green-200"
-                        }`
-                      }
-                    >
-                      {s.label}
-                    </NavLink>
-                  ))}
-                  {user?.is_admin && (
-                    <NavLink
-                      to="/users"
-                      onClick={() => setMobileOpen(false)}
-                      className={({ isActive }) =>
-                        `flex-1 min-w-[120px] px-3 py-3 rounded-2xl text-sm font-semibold admin-create-btn ${
-                          isActive ? "is-active" : ""
-                        }`
-                      }
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16M4 12h16"/>
-                      </svg>
-                      {lang.startsWith("ar") ? "إنشاء مدير" : "Créer Admin"}
-                    </NavLink>
-                  )}
-                  {user && (
-                    <button
-                      onClick={() => { logout(); setMobileOpen(false); }}
-                      className="flex-1 min-w-[120px] px-3 py-3 rounded-2xl text-sm font-semibold logout-btn"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H3"/>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 8l-4 4 4 4"/>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 4v16"/>
-                      </svg>
-                      {lang.startsWith("ar") ? "تسجيل الخروج" : t("logout")}
-                    </button>
-                  )}
-                </div>
-
-                {/* Mobile language switch */}
-                <div className="flex items-center justify-center gap-3 pt-2">
-                  <button
-                    onClick={()=>handleLangSwitch('fr')}
-                    className={`px-5 py-2 rounded-full text-sm font-bold ${
-                      lang==='fr' ? 'bg-green-600 text-white shadow' : 'bg-green-100 text-green-700 hover:bg-green-200'
-                    }`}
-                    aria-pressed={lang==='fr'}
-                  >FR</button>
-                  <button
-                    onClick={()=>handleLangSwitch('ar')}
-                    className={`px-5 py-2 rounded-full text-sm font-bold ${
-                      lang==='ar' ? 'bg-green-600 text-white shadow' : 'bg-green-100 text-green-700 hover:bg-green-200'
-                    }`}
-                    aria-pressed={lang==='ar'}
-                  >AR</button>
-                </div>
+                </button>
               </div>
             </div>
           </div>
         </nav>
       </div>
+      {/* Mobile side panel system (button now inside navbar) */}
+        <div className={`mob-overlay ${mobileOpen? 'open':''}`} onClick={()=> setMobileOpen(false)} />
+        <div className="mob-panel-outer" aria-hidden={!mobileOpen}>
+          <div className="mob-panel-shell">
+            <div className={`mob-panel-anim ${mobileOpen? 'open':''}`}>
+              <div className="mob-panel" ref={mobileMenuRef} role="dialog" aria-modal="true" tabIndex="-1" aria-label={lang.startsWith('ar')? 'القائمة الرئيسية':'Menu Principal'}>
+                <button className="mob-close-btn" onClick={()=> setMobileOpen(false)} aria-label={lang.startsWith('ar')? 'إغلاق':'Fermer'}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" /></svg>
+                </button>
+                <div className="mob-section">
+                  {groups.map(g=>{
+                    const open = openGroup===g.key;
+                    return (
+                      <div className="mob-accord" key={g.key}>
+                        <button
+                          type="button"
+                          className={`mob-accord-btn ${open? '':'collapsed'}`}
+                          aria-expanded={open}
+                          aria-controls={`acc-${g.key}`}
+                          onClick={()=> toggleGroupMobile(g.key)}
+                        >
+                          <span>{g.label}</span>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-4 h-4 transition-transform ${open? 'rotate-180':''}`}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id={`acc-${g.key}`} className={`mob-accord-body ${open? 'open':''}`}>
+                          <div className="mob-accord-list">
+                            {g.items.map(i=> (
+                              <NavLink
+                                key={i.to}
+                                to={i.to}
+                                className={({isActive})=> isActive? 'active' : ''}
+                                onClick={()=> { setMobileOpen(false); setOpenGroup(null); }}
+                              >{i.label}</NavLink>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mob-divider" />
+                <div className="mob-grid-actions">
+                  {singles.map(s=> (
+                    <NavLink key={s.to} to={s.to} className={({isActive})=> isActive? 'active':''} onClick={()=> setMobileOpen(false)}>{s.label}</NavLink>
+                  ))}
+                  {user?.is_admin && (
+                    <NavLink to="/users" className={({isActive})=> isActive? 'active':''} onClick={()=> setMobileOpen(false)}>
+                      {lang.startsWith('ar')? 'إنشاء مدير':'Créer Admin'}
+                    </NavLink>
+                  )}
+                  {user && (
+                    <button onClick={()=> { logout(); setMobileOpen(false); }}>
+                      {lang.startsWith('ar')? 'تسجيل الخروج': t('logout')}
+                    </button>
+                  )}
+                </div>
+                <div className="mob-lang">
+                  <button
+                    type="button"
+                    onClick={()=> handleLangSwitch('fr')}
+                    className={lang==='fr'? 'active':''}
+                    aria-pressed={lang==='fr'}
+                  >FR</button>
+                  <button
+                    type="button"
+                    onClick={()=> handleLangSwitch('ar')}
+                    className={lang==='ar'? 'active':''}
+                    aria-pressed={lang==='ar'}
+                  >AR</button>
+                </div>
+              </div>
+              <div className="mob-panel-glass mob-panel-anim" aria-hidden />
+            </div>
+          </div>
+  </div>
       <div style={{ height: spacerH }} />
     </>
   );

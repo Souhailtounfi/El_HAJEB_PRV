@@ -27,6 +27,7 @@ export default function PresentationGenerale(){
                 <Card to="/presentation-generale/apercu-historique" title={isAr?"لمحة تاريخية":"Aperçu Historique"} desc={isAr?"أصل التسمية وتحولات عبر الزمن":"Origine du nom et évolutions au fil du temps"} />
                 <Card to="/presentation-generale/situation-geographique" title={isAr?"الموقع الجغرافي":"Situation Géographique"} desc={isAr?"الموقع، الحدود، والخريطة":"Localisation, limites et carte illustrative"} />
                 <Card to="/presentation-generale/milieu-naturel" title={isAr?"الوسط الطبيعي":"Milieu Naturel"} desc={isAr?"التضاريس والمناخ والخصائص الطبيعية":"Morphologie, climat et caractéristiques naturelles"} />
+                <Card to="/presentation-generale/superficie-population" title={isAr?"المساحة و الساكنة":"Superficie & Population"} desc={isAr?"المساحة، التوزيع الديموغرافي، الهرم العمري":"Superficie, distribution démographique, pyramide des âges"} />
               </div>
             </article>
           </div>
