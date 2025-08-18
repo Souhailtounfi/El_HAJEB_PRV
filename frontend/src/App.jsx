@@ -17,6 +17,21 @@ import OrganisationAdministrative from "./pages/OrganisationAdministrative";
 import MilieuNaturel from "./pages/MilieuNaturel";
 import SuperficiePopulation from "./pages/SuperficiePopulation";
 import ReseauRoutier from "./pages/ReseauRoutier";
+import EauElectricite from "./pages/EauElectricite";
+import Habitat from "./pages/Habitat";
+import Environnement from "./pages/Environnement";
+import Enseignement from "./pages/Enseignement";
+import FormationProfessionnelle from "./pages/FormationProfessionnelle";
+ import Sante from "./pages/Sante";
+import ProtectionCivile from "./pages/ProtectionCivile";
+import EntraideAssociatif from "./pages/EntraideAssociatif";
+import JeunesseSports from "./pages/JeunesseSports";
+import Indh from "./pages/Indh";
+import SecteurPriveChampReligieux from "./pages/SecteurPriveChampReligieux";
+import Agriculture from "./pages/Agriculture";
+import Carrieres from "./pages/Carrieres";
+import EauxForets from "./pages/EauxForets";
+import IndustrieCommerce from "./pages/IndustrieCommerce";
 import "./styles/mobile-fixes.css";
 
 function App() {
@@ -43,7 +58,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* Presentation Générale section */}
+              {/* Navbar Links section */}
               <Route
                 path="/presentation-generale"
                 element={<PresentationGenerale />}
@@ -71,6 +86,66 @@ function App() {
               <Route
                 path="/infrastructures-base/reseau-routier"
                 element={<ReseauRoutier />}
+              />
+              <Route
+                path="/infrastructures-base/eau-electricite"
+                element={<EauElectricite />}
+              />
+              <Route
+                path="/infrastructures-base/habitat"
+                element={<Habitat />}
+              />
+              <Route
+                path="/infrastructures-base/environnement"
+                element={<Environnement />}
+              />
+              <Route
+                path="/secteurs-sociaux/enseignement"
+                element={<Enseignement />}
+              />
+              <Route
+                path="/secteurs-sociaux/formation-professionnelle"
+                element={<FormationProfessionnelle />}
+              />
+              <Route
+                path="/secteurs-sociaux/sante"
+                element={<Sante />}
+              />
+              <Route
+                path="/secteurs-sociaux/protection-civile"
+                element={<ProtectionCivile />}
+              />
+              <Route
+                path="/secteurs-sociaux/entraide-associatif"
+                element={<EntraideAssociatif />}
+              />
+              <Route
+                path="/secteurs-sociaux/jeunesse-sports"
+                element={<JeunesseSports />}
+              />
+              <Route
+                path="/secteurs-sociaux/indh"
+                element={<Indh />}
+              />
+              <Route
+                path="/secteurs-sociaux/secteur-prive-champ-religieux"
+                element={<SecteurPriveChampReligieux />}
+              />
+              <Route
+                path="/secteurs-productifs/agriculture"
+                element={<Agriculture />}
+              />
+              <Route
+                path="/secteurs-productifs/carrieres"
+                element={<Carrieres />}
+              />
+              <Route
+                path="/secteurs-productifs/eaux-forets"
+                element={<EauxForets />}
+              />
+              <Route
+                path="/secteurs-productifs/industrie-commerce"
+                element={<IndustrieCommerce />}
               />
 
               {/* Admin Routes */}
@@ -108,7 +183,7 @@ function App() {
               />
 
               {/* Redirect unknown routes */}
-              <Route path="*" element={<Navigate to="/news" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
           <Footer />

@@ -73,8 +73,7 @@ export default function FuturisticNavbar() {
         label: L("SECTEURS D’INFRASTRUCTURES DE BASE", "قطاعات البنية التحتية الأساسية"),
         items: [
           { to: "/infrastructures-base/reseau-routier", label: L("Réseau Routier", "الشبكة الطرقية") },
-          { to: "/infrastructures-base/eau-potable", label: L("L’Eau Potable", "ماء الشرب") },
-          { to: "/infrastructures-base/electricite", label: L("L’Électricité", "الكهرباء") },
+          { to: "/infrastructures-base/eau-electricite", label: L("Eau & Électricité", "الماء و الكهرباء") },
           { to: "/infrastructures-base/habitat", label: L("Habitat", "السكن") },
           { to: "/infrastructures-base/environnement", label: L("Environnement", "البيئة") },
         ],
@@ -91,8 +90,7 @@ export default function FuturisticNavbar() {
           { to: "/secteurs-sociaux/entraide-associatif", label: L("Entraide Nationale & Tissu Associatif", "التعاون الوطني والنسيج الجمعوي") },
           { to: "/secteurs-sociaux/jeunesse-sports", label: L("Jeunesse & Sports", "الشباب والرياضة") },
           { to: "/secteurs-sociaux/indh", label: L("INDH", "المبادرة الوطنية للتنمية البشرية") },
-          { to: "/secteurs-sociaux/secteur-prive", label: L("Secteur Privé", "القطاع الخاص") },
-          { to: "/secteurs-sociaux/champ-religieux", label: L("Champ Religieux", "الحقل الديني") },
+          { to: "/secteurs-sociaux/secteur-prive-champ-religieux", label: L("Secteur Privé & Champ Religieux", "القطاع الخاص و الحقل الديني") },
         ],
       },
       {
