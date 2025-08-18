@@ -32,6 +32,10 @@ import Agriculture from "./pages/Agriculture";
 import Carrieres from "./pages/Carrieres";
 import EauxForets from "./pages/EauxForets";
 import IndustrieCommerce from "./pages/IndustrieCommerce";
+import Tourisme from "./pages/Tourisme";
+import Artisanat from "./pages/Artisanat";
+import Investissements from "./pages/Investissements";
+import ContactsUtiles from "./pages/ContactsUtiles";
 import "./styles/mobile-fixes.css";
 
 function App() {
@@ -146,6 +150,22 @@ function App() {
               <Route
                 path="/secteurs-productifs/industrie-commerce"
                 element={<IndustrieCommerce />}
+              />
+              <Route
+                path="/secteurs-productifs/tourisme"
+                element={<Tourisme />}
+              />
+              <Route
+                path="/secteurs-productifs/artisanat"
+                element={<Artisanat />}
+              />
+              <Route
+                path="/secteurs-productifs/investissements"
+                element={<Investissements />}
+              />
+              <Route
+                path="/secteurs-productifs/contacts-utiles"
+                element={<ContactsUtiles />}
               />
 
               {/* Admin Routes */}

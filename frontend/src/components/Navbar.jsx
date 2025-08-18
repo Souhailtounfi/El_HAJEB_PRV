@@ -104,7 +104,7 @@ export default function FuturisticNavbar() {
           { to: "/secteurs-productifs/industrie-commerce", label: L("Industrie & Commerce", "الصناعة و التجارة") },
           { to: "/secteurs-productifs/tourisme", label: L("Tourisme", "السياحة") },
           { to: "/secteurs-productifs/artisanat", label: L("Artisanat", "الصناعة التقليدية") },
-          { to: "/secteurs-productifs/banque-donnees-investissements", label: L("Banque de Données des Investissements", "بنك معطيات الاستثمارات") },
+          { to: "/secteurs-productifs/investissements", label: L("Banque de Données des Investissements", "بنك معطيات الاستثمارات") },
           { to: "/secteurs-productifs/contacts-utiles", label: L("Contacts Utiles", "جهات مفيدة") },
         ],
       },

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 /**
  * Props:
@@ -7,15 +6,13 @@ import { Link } from "react-router-dom";
  *  - slug: current page slug
  *  - theme: 'light' | 'futuristic-dark' (auto fallback)
  */
-export default function PageSidebar({ lang = "fr", slug = "", theme = "light" }) {
+export default function PageSidebar({ lang = "fr", theme = "light" }) {
   return (
-    <aside className="hidden xl:flex flex-col gap-7 w-[330px]" aria-label="Page auxiliary information">
+    <aside className="hidden xl:flex flex-col gap-7 w-[330px]" aria-label={lang==='ar'? 'معلومات مساعدة':'Informations utiles'}>
       <SidebarStyle />
-      <CityPulse lang={lang} theme={theme} />
-      <WeatherBlock lang={lang} theme={theme} />
-      <QuickNav lang={lang} slug={slug} theme={theme} />
-      <FocusLinks lang={lang} theme={theme} />
-      <ContactsCard lang={lang} theme={theme} />
+      <EmergencyNumbers lang={lang} theme={theme} />
+  <WeatherBlock lang={lang} theme={theme} />
+      <UsefulPhones lang={lang} theme={theme} />
     </aside>
   );
 }
@@ -35,36 +32,90 @@ function Card({ title, children, theme, accent }) {
   );
 }
 
-/* Animated city metrics */
-function CityPulse({ lang, theme }) {
-  const data = [
-    { k: lang === "ar" ? "السكان" : "Population", v: "267K", t: "pop" },
-    { k: lang === "ar" ? "المساحة" : "Superficie", v: "2193 km²", t: "area" },
-    { k: lang === "ar" ? "الارتفاع" : "Altitude", v: "1050m", t: "alt" },
-    { k: lang === "ar" ? "معدل نمو" : "Croissance", v: "+0.8%", t: "growth" },
+/* Emergency Numbers Card */
+function EmergencyNumbers({ lang, theme }) {
+  const frRows = [
+    ['PROVINCE D\'EL HAJEB','-','035-54-36-71/72/73'],
+    ['SÛRETÉ NATIONALE','19','0535542760'],
+    ['GENDARMERIE ROYALE','177','035-54-30-13'],
+    ['PROTECTION CIVILE','150','0535543677'],
+    ['HOPITAL D\'EL HAJEB','-','035-54-26-75'],
   ];
+  // Arabic placeholders (can be translated later)
+  const arRows = [
+    ['عمالة الحاجب','-','035-54-36-71/72/73'],
+    ['الأمن الوطني','19','0535542760'],
+    ['الدرك الملكي','177','035-54-30-13'],
+    ['الوقاية المدنية','150','0535543677'],
+    ['مستشفى الحاجب','-','035-54-26-75'],
+  ];
+  const rows = lang==='ar'? arRows : frRows;
   return (
-    <Card
-      title={lang === "ar" ? "نبض المدينة" : "Pulse Urbaine"}
-      theme={theme}
-      accent="emerald"
-    >
-      <ul className="ps-pulse-list">
-        {data.map(d => (
-          <li key={d.t} className="ps-pulse-item">
-            <span className="ps-pulse-key" dir={lang === "ar" ? "rtl" : "ltr"}>{d.k}</span>
-            <span className={`ps-pulse-val tag-${d.t}`}>{d.v}</span>
+    <Card title={lang==='ar'? 'أرقام الطوارئ' : 'Numéros d\'urgence'} theme={theme} accent="rose">
+      <ul className="ps-emerg-list">
+        {rows.map(r=> (
+          <li key={r[0]} className="em-row">
+            <span className="em-admin" dir={lang==='ar'? 'rtl':'ltr'}>{r[0]}</span>
+            <span className="em-nv">{r[1]}</span>
+            <a href={`tel:${r[2]}`} className="em-phone">{r[2]}</a>
           </li>
         ))}
       </ul>
-      <p className="ps-footnote">
-        {lang === "ar" ? "قيم تقريبية للعرض — قابلة للتحديث." : "Valeurs indicatives — à affiner."}
-      </p>
+      <p className="ps-footnote">{lang==='ar'? 'مباشرة وسريعة':'Accès rapide'}</p>
     </Card>
   );
 }
 
-/* Weather with graceful abort + shimmer */
+/* Useful Phones (long list) */
+function UsefulPhones({ lang, theme }) {
+  const listFR = [
+    ['ITTISSALAT AL MAGHRIB','0535-54-11-84'],
+    ['TRESORERIE PROVINCIALE','0535-54-23-75'],
+    ['PERCEPTION D\'EL HAJEB','0535-54-22-24'],
+    ['CAISSE REGIONALE DU CREDIT AGRICOLE','0535-54-34-14'],
+    ['DELEGATION PROV. AGRICULTURE','0535-54-33-03'],
+    ['DELEGATION PROV. SANTE','0535-54-31-59'],
+    ['DELEGATION PROV. EDUCATION','0535-54-37-14'],
+    ['DELEGATION JEUNESSE & SPORTS','0535-54-32-92'],
+    ['ONEP EAU POTABLE','0535-54-21-73'],
+    ['ONE ELECTRICITE','0535-54-28-78'],
+    ['POSTE & TELECOM','0535-54-16-11 / 12-26'],
+    ['SUBDIVISION EQUIPEMENT','06-79-82-47-09'],
+    ['COMMUNE EL HAJEB','0535-54-17-28'],
+    ['COMMUNE SEBAA AYOUne','0535-54-60-05'],
+    ['COMMUNE AGOURAI','0535-43-00-08'],
+    ['COMMUNE AIN TAOUJDATE','0535-44-15-13'],
+    ['C.R AIT OUKHAFEN','0535-52-74-47'],
+    ['C.R AIT YAAZEM','0535-51-74-01'],
+    ['C.R SEBT JAHJOUH','0535-52-00-36'],
+    ['C.R RAS IJJERRI','0535-52-44-77'],
+    ['C.R TAMCHACHAT','0535-41-03-57'],
+    ['C.R AIT BOURZOUINE','0535-43-64-85 / 86'],
+    ['C.R AIT AAZMANE','0535-54-12-56'],
+    ['C.R IQADDAR','0535-54-23-66'],
+    ['C.R AIT BOUBIDMANE','0535-54-63-21'],
+    ['C.R AIT HARZELLAH','0535-54-12-42'],
+    ['C.R EL MASSIRA','0535-44-08-83'],
+    ['C.R GUIABES','0535-44-04-06'],
+  ];
+  // Arabic placeholders (can translate later)
+  const listAR = listFR.map(([n,p])=> [n, p]);
+  const list = lang==='ar'? listAR : listFR;
+  return (
+    <Card title={lang==='ar'? 'هواتف مفيدة' : 'Téléphones utiles'} theme={theme} accent="emerald">
+      <ul className="ps-phone-long">
+        {list.map(([n,p]) => (
+          <li key={n} className="ph-row">
+            <span className="ph-name" dir={lang==='ar'? 'rtl':'ltr'}>{n}</span>
+            <a href={`tel:${p}`} className="ph-number">{p}</a>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
+/* Weather (live via Open-Meteo) */
 function WeatherBlock({ lang, theme }) {
   const [w, setW] = useState(null);
   const [err, setErr] = useState(false);
@@ -73,140 +124,22 @@ function WeatherBlock({ lang, theme }) {
     fetch("https://api.open-meteo.com/v1/forecast?latitude=33.69&longitude=-5.37&current_weather=true", { signal: ctrl.signal })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(j => setW(j.current_weather))
-      .catch(e => {
-        if (e.name !== "AbortError") setErr(true);
-      });
+      .catch(e => { if(e.name !== 'AbortError') setErr(true); });
     return () => ctrl.abort();
   }, []);
   return (
-    <Card
-      title={lang === "ar" ? "الطقس" : "Météo"}
-      theme={theme}
-      accent="cyan"
-    >
+    <Card title={lang==='ar'? 'الطقس' : 'Météo'} theme={theme} accent="cyan">
       {!w && !err && <div className="ps-skel-line h-8 w-32" />}
-      {err && <div className="ps-error">{lang === "ar" ? "تعذر التحميل" : "Indispo."}</div>}
+      {err && <div className="ps-error">{lang==='ar'? 'تعذر التحميل' : 'Indispo.'}</div>}
       {w && (
         <div className="ps-weather">
           <div className="ps-temp">
             <span className="deg">{Math.round(w.temperature)}°C</span>
-            <span className="ws">
-              {lang === "ar" ? "رياح" : "Vent"} {Math.round(w.windspeed)} km/h
-            </span>
+            <span className="ws">{lang==='ar'? 'رياح' : 'Vent'} {Math.round(w.windspeed)} km/h</span>
           </div>
-          <div className="ps-meta">
-            {lang === "ar" ? "المصدر: Open‑Meteo" : "Source : Open‑Meteo"}
-          </div>
+          <div className="ps-meta">{lang==='ar'? 'المصدر: Open‑Meteo' : 'Source : Open‑Meteo'}</div>
         </div>
       )}
-    </Card>
-  );
-}
-
-/* Quick navigation anchors by slug */
-function QuickNav({ lang, slug, theme }) {
-  const map = {
-    "situation-geographique": [
-      { id: "map", fr: "Carte", ar: "الخريطة" },
-      { id: "description", fr: "Texte", ar: "النص" },
-    ],
-    "apercu-historique": [
-      { id: "description", fr: "Texte", ar: "النص" },
-    ],
-    "presentation-generale": [
-      { id: "description", fr: "Contenu", ar: "المحتوى" },
-    ],
-    "superficie-population": [
-      { id: "intro", fr: "Intro", ar: "مقدمة" },
-      { id: "table-communes", fr: "Communes", ar: "الجماعات" },
-      { id: "evolution", fr: "Évolution", ar: "التطور" },
-      { id: "pyramide-age", fr: "Pyramide", ar: "هرم" },
-      { id: "structure-age", fr: "Structure", ar: "البنية" },
-    ],
-  };
-  const list = map[slug] || [];
-  return (
-    <Card
-      title={lang === "ar" ? "تنقل" : "Navigation"}
-      theme={theme}
-      accent="violet"
-    >
-      {list.length === 0 && (
-        <p className="ps-empty">{lang === "ar" ? "لا عناصر" : "Aucun lien"}</p>
-      )}
-      {list.length > 0 && (
-        <ul className="ps-links">
-          {list.map(l => (
-            <li key={l.id}>
-              <a href={`#${l.id}`} className="ps-anchor">
-                <span className="b" />
-                <span>{lang === "ar" ? l.ar : l.fr}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-      <div className="ps-back">
-        <Link to="/presentation-generale" className="ps-back-link">
-          {lang === "ar" ? "العودة للقسم" : "Retour section"}
-        </Link>
-      </div>
-    </Card>
-  );
-}
-
-/* Curated static + external placeholders */
-function FocusLinks({ lang, theme }) {
-  const items = [
-    { fr: "Patrimoine & Sites", ar: "الموروث و المواقع", to: "#", tag: "pat" },
-    { fr: "Cartes stratégiques", ar: "خرائط إستراتيجية", to: "#", tag: "map" },
-    { fr: "Projets récents", ar: "مشاريع حديثة", to: "#", tag: "dev" },
-  ];
-  return (
-    <Card
-      title={lang === "ar" ? "محاور مميزة" : "Focus"}
-      theme={theme}
-      accent="amber"
-    >
-      <ul className="ps-focus">
-        {items.map(i => (
-          <li key={i.tag}>
-            <a href={i.to} className={`ps-focus-chip chip-${i.tag}`} onClick={e => e.preventDefault()}>
-              <span className="dot" />
-              {lang === "ar" ? i.ar : i.fr}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </Card>
-  );
-}
-
-/* Useful contacts (accessible) */
-function ContactsCard({ lang, theme }) {
-  const contacts = [
-    { fr: "Mairie", ar: "البلدية", tel: "05 xx xx xx xx" },
-    { fr: "Protection Civile", ar: "الوقاية المدنية", tel: "15" },
-    { fr: "Police", ar: "الشرطة", tel: "19" },
-    { fr: "Urgences", ar: "الطوارئ", tel: "150" },
-  ];
-  return (
-    <Card
-      title={lang === "ar" ? "أرقام" : "Contacts"}
-      theme={theme}
-      accent="rose"
-    >
-      <ul className="ps-contacts">
-        {contacts.map((c, i) => (
-            <li key={i}>
-              <span className="label" dir={lang === "ar" ? "rtl" : "ltr"}>
-                {lang === "ar" ? c.ar : c.fr}
-              </span>
-              <a className="phone" href={`tel:${c.tel}`}>{c.tel}</a>
-            </li>
-        ))}
-      </ul>
-      <p className="ps-footnote">{lang === "ar" ? "قابلة للتحديث." : "À mettre à jour."}</p>
     </Card>
   );
 }
@@ -273,40 +206,28 @@ function SidebarStyle() {
       }
 
       /* Pulse list */
-      .ps-pulse-list{
-        list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.65rem;
-      }
-      .ps-pulse-item{
-        display:flex;align-items:center;justify-content:space-between;gap:.75rem;
-      }
-      .ps-pulse-key{
-        font-weight:600;
-        font-size:.63rem;
-        color:#2f4f46;
-      }
-      .ps-dark .ps-pulse-key{color:#d9f6ec;}
-      .ps-pulse-val{
-        font-size:.6rem;
-        font-weight:700;
-        letter-spacing:.05em;
-        padding:.45rem .7rem;
-        border-radius:1rem;
-        position:relative;
-        background:linear-gradient(120deg,#10b98133,#0ea5e933);
-        color:#065f46;
-        border:1px solid #10b98166;
-      }
-      .ps-dark .ps-pulse-val{color:#e3fdf5;}
-      .ps-pulse-val:before{
-        content:"";
-        position:absolute;
-        inset:0;
-        border-radius:inherit;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
-        opacity:.35;
-      }
-      .tag-growth{background:linear-gradient(120deg,#10b98155,#6ee7b755)!important;}
-      .tag-alt{background:linear-gradient(120deg,#0ea5e955,#67e8f955)!important;}
+  /* Emergency list */
+  .ps-emerg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem;}
+  .em-row{display:flex;flex-direction:column;gap:.25rem;padding:.55rem .7rem;border:1px solid #10b98133;border-radius:.9rem;background:linear-gradient(120deg,#f0fdf4,#ffffff);}
+  .ps-dark .em-row{background:linear-gradient(140deg,#093c34,#0b3a45);}      
+  .em-admin{font-size:.6rem;font-weight:700;letter-spacing:.04em;color:#065f46;}
+  .ps-dark .em-admin{color:#d1fae5;}
+  .em-nv{font-size:.55rem;font-weight:600;opacity:.75;}
+  .em-phone{font-size:.58rem;font-weight:700;color:#065f46;text-decoration:none;align-self:flex-start;padding:.32rem .55rem;border-radius:.7rem;background:linear-gradient(120deg,#d1fae5,#a7f3d0);box-shadow:0 0 0 1px #10b98155 inset;transition:.3s;}
+  .em-phone:hover{transform:translateY(-2px);box-shadow:0 6px 16px -6px rgba(16,185,129,.4);}      
+  .ps-dark .em-phone{color:#e6fff8;background:linear-gradient(120deg,#0d5f50,#0a4d5a);} 
+
+  /* Long phone list */
+  .ps-phone-long{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem;max-height:520px;overflow:auto;scrollbar-width:thin;}
+  .ps-phone-long::-webkit-scrollbar{width:6px;}
+  .ps-phone-long::-webkit-scrollbar-thumb{background:#10b98188;border-radius:3px;}
+  .ph-row{display:flex;flex-direction:column;padding:.5rem .65rem;border:1px solid #10b98122;border-radius:.85rem;background:linear-gradient(120deg,#ffffff,#f0fdf4);} 
+  .ps-dark .ph-row{background:linear-gradient(160deg,#083a34,#052e33);}     
+  .ph-name{font-size:.58rem;font-weight:600;letter-spacing:.035em;color:#065f46;margin-bottom:.25rem;}
+  .ps-dark .ph-name{color:#d1fae5;}
+  .ph-number{font-size:.56rem;font-weight:700;letter-spacing:.05em;text-decoration:none;color:#047857;align-self:flex-start;padding:.34rem .55rem;border-radius:.65rem;background:linear-gradient(120deg,#d1fae5,#a7f3d0);box-shadow:0 0 0 1px #10b98155 inset;transition:.3s;}
+  .ph-number:hover{transform:translateY(-2px);box-shadow:0 6px 16px -6px rgba(16,185,129,.4);}      
+  .ps-dark .ph-number{color:#e6fff8;background:linear-gradient(120deg,#0d5f50,#0a4d5a);}    
 
       .ps-footnote{
         margin-top:.8rem;

@@ -166,7 +166,7 @@ export default function EauxForets(){
         <tbody>{rows.map((r,i)=>(<tr key={i}>{r.map((c,j)=><td key={j} data-label={cols[j]}>{c}</td>)}</tr>))}</tbody>
         {total && <tfoot><tr>{total.map((c,i)=><th key={i}>{c}</th>)}</tr></tfoot>}
       </table>
-      {caption && <p className="table-caption">{caption}</p>}
+  {caption && <p className="table-caption" title={caption}>{caption}</p>}
     </div>
   );
 
@@ -234,7 +234,7 @@ function EefStyle({dir}){return <style>{`
 .eef-section:before{content:"";position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.55),transparent 70%);mix-blend-mode:overlay;pointer-events:none;}
 .eef-section h2{margin:0 0 1.3rem;font-size:clamp(1.15rem,2.3vw,2rem);font-weight:800;letter-spacing:.05em;color:#065f46;text-transform:uppercase;}
 .mini-title{margin:1.4rem 0 .9rem;font-size:clamp(.95rem,1.4vw,1.15rem);font-weight:700;color:#065f46;letter-spacing:.03em;}
-.para{margin:.4rem 0 1rem;font-size:.75rem;line-height:1.58;font-weight:600;color:#052e1d;} /* Darker text on light / white cards */
+.para{margin:.5rem 0 1.1rem;font-size:.82rem;line-height:1.62;font-weight:600;color:#042f22;} /* Darker text larger */
 .para.small{font-size:.7rem;opacity:.95;color:#073723;}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:0 0 1.2rem;}
 .single-img{display:flex;justify-content:center;margin:0 0 1.2rem;}
@@ -242,26 +242,26 @@ function EefStyle({dir}){return <style>{`
 .img-card img{display:block;max-width:100%;width:100%;border-radius:.8rem;aspect-ratio:4/3;object-fit:cover;}
 .img-card figcaption{margin:.5rem 0 0;font-size:.58rem;font-weight:600;letter-spacing:.05em;text-align:center;color:#065f46;}
 .table-wrap{overflow-x:auto;margin-bottom:.4rem;}
-.eef-table{width:100%;border-collapse:collapse;font-size:.68rem;min-width:560px;}
+.eef-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:580px;}
 .eef-table th,.eef-table td{border:1px solid #10b98133;padding:.55rem .65rem;text-align:${dir==='rtl'?'right':'left'};vertical-align:top;}
 .eef-table th{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;letter-spacing:.05em;}
-.eef-table tbody td{background:#fff;font-weight:600;color:#052e1d;}
+.eef-table tbody td{background:#fff;font-weight:600;color:#042f22;}
 .eef-table tbody tr:nth-child(even) td{background:#ecfdf5;}
 .eef-table tfoot th{background:#047857;color:#fff;font-weight:800;}
-.table-caption{margin:.55rem 0 0;font-size:.55rem;font-style:italic;text-align:center;opacity:.7;}
-.bullets{margin:.4rem 0 1.1rem;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.55rem;font-size:.7rem;font-weight:600;color:#052e1d;}
+.table-caption{margin:.55rem 0 0;font-size:.55rem;font-style:italic;text-align:center;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;width:100%;}
+.bullets{margin:.4rem 0 1.1rem;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.6rem;font-size:.78rem;font-weight:600;color:#042f22;}
 /* Responsive: tables -> cards */
 @media (max-width:760px){
   .eef-section{padding:1.3rem 1rem 1.7rem;}
-  .eef-table{font-size:.7rem;min-width:0;}
+  .eef-table{font-size:.78rem;min-width:0;}
   .responsive-table thead{position:absolute;left:-9999px;top:-9999px;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;border:1px solid #10b98133;background:#fff;margin-bottom:.85rem;padding:.7rem .75rem;border-radius:1rem;box-shadow:0 8px 20px -12px rgba(0,0,0,.2);} 
   .responsive-table td{border:none!important;padding:.36rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.18rem;font-size:.74rem;line-height:1.32;}
   .responsive-table td:before{content:attr(data-label);font-size:.64rem;font-weight:700;color:#047857;letter-spacing:.02em;}
   .eef-table tfoot{display:none;}
-  .para{font-size:.8rem;line-height:1.6;}
+  .para{font-size:.88rem;line-height:1.65;}
   .para.small{font-size:.74rem;}
-  .bullets{font-size:.72rem;line-height:1.38;}
+  .bullets{font-size:.8rem;line-height:1.45;}
   .img-card figcaption{font-size:.62rem;}
 }
 @media (prefers-reduced-motion:no-preference){.fade-in{opacity:0;animation:fadeIn .85s ease forwards;transform:translateY(10px);} @keyframes fadeIn{to{opacity:1;transform:none;}}}

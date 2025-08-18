@@ -124,7 +124,7 @@ export default function IndustrieCommerce(){
   const Section = ({id,title,children}) => <section id={id} className="ic-section fade-in"><h2>{title}</h2>{children}</section>;
   const Table = ({cols,rows,total,caption}) => (
     <div className="table-wrap" role="region" aria-label={cols[0]}>
-      <table className="ic-table responsive-table"><thead><tr>{cols.map(c=> <th key={c}>{c}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} data-label={cols[j]}>{c}</td>)}</tr>)}</tbody>{total && <tfoot><tr>{total.map((c,i)=><th key={i}>{c}</th>)}</tr></tfoot>}</table>{caption && <p className="table-caption">{caption}</p>}</div>
+  <table className="ic-table responsive-table"><thead><tr>{cols.map(c=> <th key={c}>{c}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j} data-label={cols[j]}>{c}</td>)}</tr>)}</tbody>{total && <tfoot><tr>{total.map((c,i)=><th key={i}>{c}</th>)}</tr></tfoot>}</table>{caption && <p className="table-caption" title={caption}>{caption}</p>}</div>
   );
 
   return (
@@ -174,31 +174,31 @@ function IcStyle({dir}){return <style>{`
 .ic-section h2{margin:0 0 1.3rem;font-size:clamp(1.15rem,2.3vw,2rem);font-weight:800;letter-spacing:.05em;color:#065f46;text-transform:uppercase;}
 .mini-title{margin:1.4rem 0 .9rem;font-size:clamp(.98rem,1.5vw,1.18rem);font-weight:700;color:#065f46;letter-spacing:.035em;}
 .space-top{margin-top:2rem;}
-.para{margin:.5rem 0 1rem;font-size:.78rem;line-height:1.6;font-weight:600;color:#064e3b;}
-.para.lead{font-size:.85rem;}
-.para.small{font-size:.7rem;opacity:.92;}
+.para{margin:.55rem 0 1.05rem;font-size:.85rem;line-height:1.65;font-weight:600;color:#053826;}
+.para.lead{font-size:.95rem;}
+.para.small{font-size:.76rem;opacity:.95;}
 .table-wrap{overflow-x:auto;margin-bottom:.4rem;}
-.ic-table{width:100%;border-collapse:collapse;font-size:.7rem;min-width:580px;}
+.ic-table{width:100%;border-collapse:collapse;font-size:.75rem;min-width:600px;}
 .ic-table th,.ic-table td{border:1px solid #10b98133;padding:.6rem .7rem;text-align:${dir==='rtl'?'right':'left'};vertical-align:top;}
 .ic-table th{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;letter-spacing:.05em;}
-.ic-table tbody td{background:#fff;font-weight:600;}
+.ic-table tbody td{background:#fff;font-weight:600;color:#053826;}
 .ic-table tbody tr:nth-child(even) td{background:#ecfdf5;}
 .ic-table tfoot th{background:#047857;color:#fff;font-weight:800;}
-.table-caption{margin:.55rem 0 0;font-size:.55rem;font-style:italic;text-align:center;opacity:.7;}
-.bullets{margin:.2rem 0 1.1rem;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.55rem;font-size:.72rem;font-weight:600;color:#064e3b;}
+.table-caption{margin:.55rem 0 0;font-size:.55rem;font-style:italic;text-align:center;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;width:100%;}
+.bullets{margin:.2rem 0 1.1rem;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.6rem;font-size:.8rem;font-weight:600;color:#053826;}
 /* Responsive tables -> cards */
 @media (max-width:760px){
   .ic-section{padding:1.35rem 1.05rem 1.8rem;}
-  .ic-table{font-size:.74rem;min-width:0;}
+  .ic-table{font-size:.8rem;min-width:0;}
   .responsive-table thead{position:absolute;left:-9999px;top:-9999px;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.55rem;border:1px solid #10b98133;background:#fff;margin-bottom:.85rem;padding:.75rem .8rem;border-radius:1.05rem;box-shadow:0 8px 22px -12px rgba(0,0,0,.22);} 
   .responsive-table td{border:none!important;padding:.38rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.18rem;font-size:.78rem;line-height:1.35;}
   .responsive-table td:before{content:attr(data-label);font-size:.66rem;font-weight:700;color:#047857;letter-spacing:.02em;}
   .ic-table tfoot{display:none;}
-  .para{font-size:.85rem;}
-  .para.lead{font-size:.9rem;}
-  .para.small{font-size:.74rem;}
-  .bullets{font-size:.78rem;}
+  .para{font-size:.92rem;}
+  .para.lead{font-size:.98rem;}
+  .para.small{font-size:.8rem;}
+  .bullets{font-size:.84rem;}
 }
 @media (prefers-reduced-motion:no-preference){.fade-in{opacity:0;animation:fadeIn .85s ease forwards;transform:translateY(10px);} @keyframes fadeIn{to{opacity:1;transform:none;}}}
 `}</style>;}
