@@ -21,11 +21,16 @@ export default function NewsList() {
     else p.delete("search");
     navigate({ pathname: location.pathname, search: p.toString() }, { replace: true });
   };
+  const setSearch = (v) => handleSearchChange(v);
 
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [sort, setSort] = useState("newest");
+  const [showAdminBoard, setShowAdminBoard] = useState(false); // toggle advanced admin table
+  const [selected, setSelected] = useState([]); // selected ids in admin board
+  const isAdmin = !!user?.is_admin;
+  const [filterHasImage, setFilterHasImage] = useState(false); // admin filter
 
   // Fetch news
   useEffect(() => {
@@ -54,7 +59,7 @@ export default function NewsList() {
 
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
-    return news
+    let arr = news
       .filter(n => {
         if (!term) return true;
         const frTitle = (n.title_fr || "").toLowerCase();
@@ -67,15 +72,18 @@ export default function NewsList() {
           frContent.includes(term) ||
           arContent.includes(term)
         );
-      })
-      .sort((a,b)=>{
+      });
+    if (filterHasImage) {
+      arr = arr.filter(n => !!(n.image_base64 || n.image));
+    }
+    return arr.sort((a,b)=>{
         const da = new Date(a.created_at || a.id);
         const db = new Date(b.created_at || b.id);
         if (sort === "newest") return db - da;
         if (sort === "oldest") return da - db;
         return 0;
       });
-  }, [news, search, sort]);
+  }, [news, search, sort, filterHasImage]);
 
   const handleDelete = async (id) => {
     if (!window.confirm(t("confirm_delete"))) return;
@@ -83,11 +91,32 @@ export default function NewsList() {
       setDeletingId(id);
       await api.delete(`/news/${id}`);
       setNews((prev) => prev.filter((n) => n.id !== id));
+      setSelected(sel => sel.filter(i=>i!==id));
     } catch {
       // silent
     } finally {
       setDeletingId(null);
     }
+  };
+
+  // Admin board helpers
+  const toggleSelect = (id) => {
+    setSelected(prev => prev.includes(id) ? prev.filter(i=>i!==id) : [...prev, id]);
+  };
+  const allFilteredIds = useMemo(()=>filtered.map(n=>n.id), [filtered]);
+  const allSelected = selected.length && allFilteredIds.every(id=>selected.includes(id));
+  const toggleSelectAll = () => {
+    if (allSelected) setSelected(sel=>sel.filter(id=>!allFilteredIds.includes(id)));
+    else setSelected(prev => Array.from(new Set([...prev, ...allFilteredIds])));
+  };
+  const handleBulkDelete = async () => {
+    if (!selected.length) return;
+    if (!window.confirm(t('confirm_delete')+` (x${selected.length})`)) return;
+    for (const id of selected) {
+      try { await api.delete(`/news/${id}`); } catch {/* ignore */}
+    }
+    setNews(prev => prev.filter(n=>!selected.includes(n.id)));
+    setSelected([]);
   };
 
   const formatDate = (d) =>
@@ -100,7 +129,7 @@ export default function NewsList() {
       : "";
 
   const base = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/,"");
-  const imgSrc = (p) => `${base}/storage/${p}`;
+  const imgSrc = (p) => `${base}/storage/${p}`; // legacy fallback
 
   const SkeletonCard = () => (
     <div className="news-card-skel">
@@ -162,6 +191,36 @@ export default function NewsList() {
           </div>
         </div>
 
+        {isAdmin && (
+          <div className="admin-toggle-wrap">
+            <button
+              type="button"
+              className={`admin-toggle ${showAdminBoard?'open':''}`}
+              onClick={()=>setShowAdminBoard(o=>!o)}
+              aria-expanded={showAdminBoard}
+              aria-controls="admin-board-panel"
+              aria-label={showAdminBoard ? (lang==='ar'? 'إخفاء لوحة الإدارة':'Masquer le panneau administration') : (lang==='ar'? 'إظهار لوحة الإدارة':'Afficher le panneau administration')}
+            >
+              <span className="pulse" />
+              <span className="ring" aria-hidden />
+              <span className="halo" aria-hidden />
+              <span className="flare" aria-hidden />
+              <span className="ico" aria-hidden>
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeWidth="1.7">
+                  <rect x="3" y="4" width="18" height="14" rx="2" />
+                  <path d="M3 10h18M9 14h2.8" strokeLinecap="round" />
+                </svg>
+              </span>
+              <span className="lbl">{showAdminBoard ? (
+                lang==='ar'? 'إخفاء لوحة الإدارة' : 'Masquer Admin'
+              ) : (
+                lang==='ar'? 'لوحة الإدارة' : 'Panneau Admin'
+              )}</span>
+              <span className="arrow" aria-hidden>{showAdminBoard? '▴':'▾'}</span>
+            </button>
+          </div>
+        )}
+
         {/* Stats */}
         {!loading && (
           <div className="stats-bar">
@@ -173,6 +232,91 @@ export default function NewsList() {
                 {lang === "ar" ? "مسح البحث" : "Effacer"}
               </button>
             )}
+          </div>
+        )}
+
+        {/* Collapsible Admin Board */}
+        {isAdmin && (
+          <div className={`admin-board-collapsible ${showAdminBoard? 'open':''}`}>
+            <div className="admin-board">
+              <div className="admin-toolbar glassy">
+                <div className="toolbar-main">
+                  <h2 className="board-title">{lang==='ar'? 'إدارة الأخبار':'Gestion des actualités'}</h2>
+                  <div className="toolbar-metrics">
+                    <span className="chip stat">{filtered.length} {lang==='ar'? 'عنصر':'entrées'}</span>
+                    {selected.length>0 && (
+                      <span className="chip selected" title={lang==='ar'? 'محدد':'Sélectionnés'}>{selected.length} {lang==='ar'? 'محدد':'sélectionnés'}</span>
+                    )}
+                    {filterHasImage && (
+                      <span className="chip filter" onClick={()=>setFilterHasImage(false)}>{lang==='ar'? 'مع صور':'Avec image'} ✕</span>
+                    )}
+                    {search && (
+                      <span className="chip search-ind" title={lang==='ar'? 'بحث':'Recherche'}>“{search}”</span>
+                    )}
+                  </div>
+                </div>
+                <div className="toolbar-actions">
+                  <div className="filters-inline">
+                    <button type="button" className={`inline-filter ${filterHasImage?'on':''}`} onClick={()=>setFilterHasImage(v=>!v)}>{lang==='ar'? 'صور فقط':'Images'}</button>
+                    <div className="divider" />
+                    <select value={sort} onChange={(e)=>setSort(e.target.value)} className="sort slim alt">
+                      <option value="newest">{lang==='ar'? 'الأحدث':'Plus récent'}</option>
+                      <option value="oldest">{lang==='ar'? 'الأقدم':'Plus ancien'}</option>
+                    </select>
+                  </div>
+                  <Link to="/news/new" className="btn-admin primary hi">{lang==='ar'? '+ إضافة':'＋ Ajouter'}</Link>
+                  <button className="btn-admin danger" disabled={!selected.length} onClick={handleBulkDelete}>{lang==='ar'? 'حذف جماعي':'Suppr. sélection'} {selected.length?`(${selected.length})`:''}</button>
+                </div>
+              </div>
+              <div className="meta-row">
+                {search && <button className="link-clear" onClick={()=>setSearch('')}>{lang==='ar'? 'مسح البحث':'Effacer la recherche'}</button>}
+                {!search && filtered.length===0 && <span className="metric ghost">{lang==='ar'? 'لا عناصر':'Aucun élément'}</span>}
+              </div>
+              <div className="table-wrap">
+                {loading ? (
+                  <div className="loading-bar" />
+                ) : filtered.length === 0 ? (
+                  <div className="empty-admin">{lang==='ar'? 'لا نتائج':'Aucun résultat'}</div>
+                ) : (
+                  <table className="news-table" dir={dir}>
+                    <thead>
+                      <tr>
+                        <th className="sel"><input type="checkbox" checked={!!allFilteredIds.length && allSelected} onChange={toggleSelectAll} aria-label="select all" /></th>
+                        <th>ID</th>
+                        <th>{lang==='ar'? 'العنوان (FR)':'Titre (FR)'}</th>
+                        <th>{lang==='ar'? 'العنوان (AR)':'Titre (AR)'}</th>
+                        <th>{lang==='ar'? 'طول النص':'Taille texte'}</th>
+                        <th>{lang==='ar'? 'صورة':'Image'}</th>
+                        <th>{lang==='ar'? 'تاريخ الإنشاء':'Créé le'}</th>
+                        <th>{lang==='ar'? 'إجراءات':'Actions'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map(item => {
+                        const frLen = plain(item.content_fr||'').length;
+                        const arLen = plain(item.content_ar||'').length;
+                        return (
+                          <tr key={item.id} className={selected.includes(item.id)?'row-selected':''}>
+                            <td className="sel"><input type="checkbox" checked={selected.includes(item.id)} onChange={()=>toggleSelect(item.id)} aria-label={`select-${item.id}`} /></td>
+                            <td>{item.id}</td>
+                            <td className="ellipsis" title={item.title_fr}>{item.title_fr || '—'}</td>
+                            <td className="ellipsis" title={item.title_ar}>{item.title_ar || '—'}</td>
+                            <td><span className="pill small" title={`FR:${frLen} AR:${arLen}`}>{frLen}/{arLen}</span></td>
+                            <td>{ item.image_base64 || item.image ? <span className="pill ok">✔</span> : <span className="pill">—</span> }</td>
+                            <td>{formatDate(item.created_at)}</td>
+                            <td className="actions-cell">
+                              <Link to={`/news/${item.id}`} className="mini-btn view" title={lang==='ar'? 'عرض':'Voir'}>👁</Link>
+                              <Link to={`/news/${item.id}/edit`} className="mini-btn edit" title={lang==='ar'? 'تحرير':'Modifier'}>✎</Link>
+                              <button onClick={()=>handleDelete(item.id)} disabled={deletingId===item.id} className="mini-btn del" title={lang==='ar'? 'حذف':'Supprimer'}>{deletingId===item.id?'…':'✕'}</button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -222,9 +366,9 @@ export default function NewsList() {
               return (
                 <div key={item.id} className="news-card group">
                   <div className="img-wrap">
-                    {item.image ? (
+          { (item.image_base64 || item.image) ? (
                       <img
-                        src={imgSrc(item.image)}
+            src={item.image_base64 || imgSrc(item.image)}
                         alt={title}
                         loading="lazy"
                         className="img"
@@ -767,7 +911,86 @@ function NewsStyle() {
       .empty .reset:hover{
         transform:translateY(-4px);
       }
-      .empty .reset:hover:before{opacity:.9;}
+  .empty .reset:hover:before{opacity:.9;}
+  /* Admin board styles (collapsible) */
+  .admin-toggle-wrap{margin:.2rem 0 1.4rem;position:relative;}
+  .admin-toggle{position:relative;display:inline-flex;align-items:center;gap:.85rem;padding:1.15rem 2.25rem 1.15rem 1.85rem;border-radius:3rem;border:1px solid rgba(16,185,129,.55);background:linear-gradient(130deg,#065f46,#047857 18%,#0d9488 36%,#0ea5e9 58%,#6366f1 78%,#818cf8);background-size:400% 100%;color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;box-shadow:0 24px 48px -18px rgba(6,95,70,.55),0 10px 30px -14px rgba(14,165,233,.45),0 0 0 4px rgba(255,255,255,.08);overflow:hidden;animation:gradShift 9s linear infinite, glowPulse 3.2s ease-in-out infinite;isolation:isolate;line-height:1;backdrop-filter:blur(6px) saturate(140%);}
+  .admin-toggle:hover{background-position:100% 0;}
+  .admin-toggle:focus-visible{outline:none;box-shadow:0 0 0 3px #fff,0 0 0 6px rgba(16,185,129,.6),0 24px 50px -18px rgba(6,95,70,.6);}  
+  .admin-toggle.open{animation:gradShift 16s linear infinite;filter:brightness(1.05);box-shadow:0 18px 38px -16px rgba(6,95,70,.55),0 8px 20px -10px rgba(14,165,233,.45),0 0 0 4px rgba(255,255,255,.09);}  
+  .admin-toggle .pulse{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 22% 30%,rgba(255,255,255,.4),transparent 62%),radial-gradient(circle at 78% 70%,rgba(255,255,255,.25),transparent 60%);mix-blend-mode:overlay;opacity:.9;animation:pulseShimmer 5.2s linear infinite;}
+  .admin-toggle .ring{position:absolute;inset:-4px;border-radius:inherit;background:conic-gradient(from 0deg,rgba(255,255,255,.0),rgba(255,255,255,.4),rgba(255,255,255,.0) 70%);animation:ringSpin 4.5s linear infinite;mix-blend-mode:overlay;pointer-events:none;}
+  .admin-toggle.open .ring{animation:ringSpinFast 2.2s linear infinite;opacity:.6;}
+  .admin-toggle .halo{position:absolute;inset:-18px;border-radius:inherit;background:radial-gradient(circle at 40% 35%,rgba(16,185,129,.55),rgba(14,165,233,.0) 60%),radial-gradient(circle at 70% 65%,rgba(99,102,241,.45),rgba(99,102,241,0) 65%);filter:blur(22px) saturate(140%);opacity:.55;animation:haloPulse 6s ease-in-out infinite;pointer-events:none;}
+  .admin-toggle.open .halo{animation:haloPulseFast 3.3s ease-in-out infinite;opacity:.6;}
+  .admin-toggle .flare{position:absolute;width:180%;height:260%;left:-40%;top:-80%;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.35),rgba(255,255,255,0) 60%);mix-blend-mode:overlay;animation:flareMove 9s linear infinite;pointer-events:none;}
+  @keyframes ringSpin{to{transform:rotate(360deg);}}
+  @keyframes ringSpinFast{to{transform:rotate(-360deg);}}
+  @keyframes gradShift{0%{background-position:0 0;}100%{background-position:120% 0;}}
+  @keyframes haloPulse{0%,100%{opacity:.4;transform:scale(.96);}50%{opacity:.7;transform:scale(1.04);}}
+  @keyframes haloPulseFast{0%,100%{opacity:.5;transform:scale(.94);}50%{opacity:.8;transform:scale(1.06);}}
+  @keyframes flareMove{0%{transform:rotate(0deg) translateY(0);}100%{transform:rotate(360deg) translateY(0);}}
+  .admin-toggle .ico{width:1.35rem;height:1.35rem;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:50%;backdrop-filter:blur(6px) saturate(160%);box-shadow:0 4px 10px -4px rgba(0,0,0,.4);}
+  .admin-toggle .ico svg{width:.9rem;height:.9rem;}
+  .admin-toggle .lbl{position:relative;z-index:2;}
+  .admin-toggle .arrow{font-size:1.15rem;line-height:0;display:inline-flex;align-items:center;}
+  /* Removed hint-badge; replaced with halo + flare for a more professional emphasis */
+  @keyframes glowPulse{0%,100%{box-shadow:0 14px 30px -12px rgba(14,165,233,.5),0 6px 16px -8px rgba(6,95,70,.4);}50%{box-shadow:0 18px 40px -12px rgba(14,165,233,.65),0 10px 24px -10px rgba(6,95,70,.5);} }
+  @keyframes pulseShimmer{0%{transform:translateX(-45%);}100%{transform:translateX(55%);} }
+  .admin-board-collapsible{max-height:0;opacity:0;transform:translateY(-18px);transition:max-height .85s cubic-bezier(.16,.8,.26,.99),opacity .55s ease,transform .6s ease;overflow:hidden;}
+  .admin-board-collapsible.open{max-height:1800px;opacity:1;transform:translateY(0);} 
+  .admin-board{max-width:1500px;margin:0 auto 2.2rem;padding:.4rem .3rem 2.6rem;}
+  .admin-toolbar{display:flex;flex-direction:column;gap:1rem;margin:0 0 1.3rem;padding:1.15rem 1.35rem 1.35rem;border:1px solid #d9efe6;border-radius:1.4rem;background:linear-gradient(145deg,#ffffff,#f1fbf6);box-shadow:0 6px 24px -10px rgba(6,95,70,.18),0 2px 6px -3px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .admin-toolbar.glassy:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(16,185,129,.12),transparent 60%),radial-gradient(circle at 82% 18%,rgba(14,165,233,.18),transparent 55%);opacity:.7;pointer-events:none;}
+  .toolbar-main{display:flex;flex-wrap:wrap;gap:1.1rem;align-items:center;justify-content:space-between;}
+  .board-title{margin:0;font-size:1.6rem;font-weight:700;letter-spacing:.5px;background:linear-gradient(90deg,#065f46,#0ea5e9);-webkit-background-clip:text;color:transparent;}
+  .toolbar-metrics{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;}
+  .chip{display:inline-flex;align-items:center;font-size:.58rem;font-weight:700;letter-spacing:.11em;padding:.5rem .8rem;border-radius:1rem;border:1px solid #cfe8df;background:#f0fdf4;color:#065f46;text-transform:uppercase;position:relative;}
+  .chip.stat{background:#ecfdf5;}
+  .chip.selected{background:#fef3c7;border-color:#fde68a;color:#92400e;}
+  .chip.filter{background:#dbeafe;border-color:#bfdbfe;color:#1e3a8a;cursor:pointer;}
+  .chip.search-ind{background:#e0f2fe;border-color:#bae6fd;color:#075985;}
+  .toolbar-actions{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;}
+  .filters-inline{display:flex;align-items:center;gap:.6rem;}
+  .inline-filter{border:1px solid #10b98140;background:#ffffff;color:#065f46;font-size:.58rem;font-weight:700;letter-spacing:.11em;padding:.55rem .9rem;border-radius:1rem;cursor:pointer;transition:.35s;}
+  .inline-filter.on{background:#10b981;color:#fff;box-shadow:0 4px 14px -6px rgba(6,95,70,.4);}
+  .inline-filter:hover{background:#f0fdf4;}
+  .filters-inline .divider{width:1px;height:22px;background:#d9efe6;}
+  .btn-admin{border:1px solid #10b98140;background:linear-gradient(120deg,#ffffff,#ecfdf5);color:#065f46;font-size:.63rem;font-weight:800;letter-spacing:.15em;padding:.78rem 1.25rem;border-radius:1rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;transition:.35s;text-transform:uppercase;}
+  .btn-admin:hover{background:linear-gradient(120deg,#f0fdf4,#e6fcf3);box-shadow:0 3px 10px -4px rgba(6,95,70,.3);}
+  .btn-admin.primary{background:linear-gradient(120deg,#10b981,#059669);color:#fff;border:none;box-shadow:0 8px 20px -10px rgba(6,95,70,.48);}
+  .btn-admin.primary.hi{animation:pulseHi 4s ease-in-out infinite;}
+  @keyframes pulseHi{0%,100%{box-shadow:0 8px 22px -10px rgba(6,95,70,.5);}50%{box-shadow:0 14px 28px -10px rgba(6,95,70,.65);} }
+  .btn-admin.danger{background:linear-gradient(120deg,#dc2626,#b91c1c);color:#fff;border:none;}
+  .btn-admin.danger:hover{filter:brightness(1.07);}
+  .btn-admin:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;filter:none;}
+  .meta-row{display:flex;align-items:center;gap:1.2rem;margin:.4rem 0 1rem;padding:0 .2rem;flex-wrap:wrap;}
+  .metric{font-size:.65rem;font-weight:700;letter-spacing:.08em;background:#d1fae5;padding:.45rem .95rem;border-radius:1rem;color:#065f46;}
+  .metric.ghost{background:#f1f5f9;color:#64748b;}
+  .link-clear{background:none;border:none;color:#dc2626;font-size:.65rem;font-weight:700;cursor:pointer;letter-spacing:.08em;text-decoration:underline;}
+  .table-wrap{border:1px solid #d9efe6;border-radius:1.4rem;background:#ffffff;overflow:auto;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .news-table{width:100%;border-collapse:separate;border-spacing:0;min-width:860px;font-size:.78rem;}
+  .news-table thead th{position:sticky;top:0;background:linear-gradient(120deg,#ecfdf5,#ffffff);font-weight:700;color:#064e3b;font-size:.7rem;letter-spacing:.11em;text-transform:uppercase;padding:.95rem 1rem;border-bottom:1px solid #d9efe6;z-index:2;}
+  .news-table tbody td{padding:.85rem 1rem;vertical-align:middle;border-bottom:1px solid #eef6f2;max-width:300px;}
+  .news-table tbody tr:last-child td{border-bottom:none;}
+  .news-table tbody tr:hover{background:#f4fdf9;}
+  .news-table tbody tr.row-selected{background:#ecfdf5;}
+  .news-table th.sel, .news-table td.sel{width:34px;text-align:center;}
+  .news-table input[type=checkbox]{width:14px;height:14px;cursor:pointer;}
+  .ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;}
+  .pill{display:inline-flex;align-items:center;justify-content:center;padding:.25rem .55rem;border-radius:.85rem;background:#e2f7ef;font-size:.55rem;font-weight:600;color:#065f46;min-width:1.6rem;}
+  .pill.ok{background:#10b981;color:#fff;}
+  .pill.small{background:#fef3c7;color:#92400e;}
+  .actions-cell{display:flex;align-items:center;gap:.3rem;}
+  .mini-btn{border:none;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer;font-size:.7rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;background:#f1f5f9;color:#065f46;transition:.3s;box-shadow:0 1px 2px rgba(0,0,0,.08);}
+  .mini-btn.view{background:#ecfdf5;}
+  .mini-btn.edit{background:#fef3c7;color:#92400e;}
+  .mini-btn.del{background:#fee2e2;color:#b91c1c;}
+  .mini-btn:hover{transform:translateY(-2px);box-shadow:0 4px 10px -4px rgba(0,0,0,.2);}
+  .mini-btn:disabled{opacity:.4;cursor:wait;}
+  .loading-bar{height:4px;background:linear-gradient(90deg,#10b981,#0ea5e9,#10b981);background-size:200% 100%;animation:loadAnim 1.4s linear infinite;border-radius:4px;margin:1.2rem;}
+  @keyframes loadAnim{0%{background-position:0 0;}100%{background-position:200% 0;}}
+  .empty-admin{padding:3rem 1rem;text-align:center;font-size:.8rem;font-weight:600;color:#065f46;}
     `}</style>
   );
 }

@@ -152,7 +152,7 @@ function TourismeStyle({dir}){return <style>{`
 .tour-gallery{--card-min:250px;display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--card-min),1fr));gap:1.25rem;margin:0 auto 2.8rem;justify-items:center;max-width:1700px;padding:0 .4rem;}
 .img-card{margin:0;width:100%;background:rgba(255,255,255,.75);border:1px solid #10b98133;padding:.75rem;border-radius:1.2rem;backdrop-filter:blur(12px) saturate(170%);-webkit-backdrop-filter:blur(12px) saturate(170%);box-shadow:0 20px 56px -22px rgba(0,0,0,.42),0 0 0 1px #10b98133;} 
 .img-card img{display:block;width:100%;border-radius:1rem;aspect-ratio:16/10;object-fit:cover;}
-.img-card figcaption{margin:.6rem 0 0;font-size:.67rem;font-weight:600;text-align:center;color:#045c43;letter-spacing:.045em;line-height:1.25;}
+.img-card figcaption{margin:.6rem 0 0;font-size:.76rem;font-weight:600;text-align:center;color:#045c43;letter-spacing:.045em;line-height:1.25;}
 .tour-section{background:rgba(255,255,255,.78);border:1px solid #10b98133;padding:1.75rem 1.5rem 2.2rem;border-radius:1.5rem;box-shadow:0 26px 58px -20px rgba(0,0,0,.32);margin-bottom:2.4rem;}
 .tour-section h2{margin:0 0 1.35rem;font-size:clamp(1.25rem,2.5vw,2.15rem);font-weight:800;letter-spacing:.055em;text-transform:uppercase;color:#065f46;}
 .mini-title{margin:1.6rem 0 1rem;font-size:clamp(1rem,1.4vw,1.2rem);font-weight:700;letter-spacing:.04em;color:#065f46;}
@@ -163,7 +163,7 @@ function TourismeStyle({dir}){return <style>{`
 .tour-table th{background:linear-gradient(130deg,#10b981,#059669);color:#fff;font-weight:700;letter-spacing:.05em;}
 .tour-table tbody td{background:#fff;font-weight:600;color:#042f22;}
 .tour-table tbody tr:nth-child(even) td{background:#ecfdf5;}
-.table-caption{margin:.35rem 0 0;font-size:.56rem;font-style:italic;text-align:center;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;width:100%;}
+.table-caption{margin:.45rem 0 0;font-size:.7rem;font-style:italic;text-align:center;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;width:100%;}
 /* Remove any alphabetical markers from lists we might add later */
 ol{list-style:none;padding:0;margin:0;}
 .bullets{list-style:none;margin:.6rem 0 1.2rem;padding-${dir==='rtl'?'right':'left'}:0;display:flex;flex-direction:column;gap:.55rem;}
@@ -176,7 +176,7 @@ ol{list-style:none;padding:0;margin:0;}
   .responsive-table thead{position:absolute;left:-9999px;top:-9999px;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.55rem;border:1px solid #10b98133;background:#fff;margin-bottom:.9rem;padding:.8rem .85rem;border-radius:1.1rem;box-shadow:0 10px 26px -18px rgba(0,0,0,.25);} 
   .responsive-table td{border:none!important;padding:.38rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.22rem;font-size:.78rem;line-height:1.34;}
-  .responsive-table td:before{content:attr(data-label);font-size:.66rem;font-weight:700;color:#047857;letter-spacing:.02em;}
+  .responsive-table td:before{content:attr(data-label);font-size:.74rem;font-weight:700;color:#047857;letter-spacing:.02em;}
   .tour-section h2{font-size:1.35rem;}
   .mini-title{font-size:1.02rem;}
   .para.strong{font-size:.95rem;}

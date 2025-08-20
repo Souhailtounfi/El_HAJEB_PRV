@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\News;
 use App\Models\NewsImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class NewsController extends Controller
@@ -24,31 +23,36 @@ class NewsController extends Controller
             'title_ar' => 'required|string|max:255',
             'content_fr' => 'required|string',
             'content_ar' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'extra_images' => 'nullable|array',
-            'extra_images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192', // 8MB + webp
+            'extra_images' => 'nullable|array|max:10',
+            'extra_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
-        // Store main image path (relative, e.g. news_images/filename.jpg)
-        $imagePath = $request->hasFile('image')
-            ? $request->file('image')->store('news_images', 'public')
-            : null;
+        // Store main image binary inside DB
+        $imageBlob = null;
+        $imageMime = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageBlob = file_get_contents($file->getRealPath());
+            $imageMime = $file->getClientMimeType();
+        }
 
         $news = News::create([
             'title_fr' => $validated['title_fr'],
             'title_ar' => $validated['title_ar'],
             'content_fr' => $validated['content_fr'],
             'content_ar' => $validated['content_ar'],
-            'image' => $imagePath,
+            'image_blob' => $imageBlob,
+            'image_mime' => $imageMime,
         ]);
 
-        // Store extra images in news_images table
+        // Store extra images (binary)
         if ($request->hasFile('extra_images')) {
             foreach ($request->file('extra_images') as $image) {
-                $path = $image->store('news_images', 'public');
                 NewsImage::create([
                     'news_id' => $news->id,
-                    'image' => $path, // Only the relative path, e.g. news_images/filename.jpg
+                    'data' => file_get_contents($image->getRealPath()),
+                    'mime' => $image->getClientMimeType(),
                 ]);
             }
         }
@@ -77,36 +81,32 @@ class NewsController extends Controller
             'title_ar' => 'required|string|max:255',
             'content_fr' => 'required|string',
             'content_ar' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'extra_images' => 'nullable|array',
-            'extra_images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
+            'extra_images' => 'nullable|array|max:10',
+            'extra_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
-        // Update main image if provided
-        if ($request->hasFile('image')) {
-            if ($news->image) {
-                Storage::disk('public')->delete($news->image);
-            }
-            $validated['image'] = $request->file('image')->store('news_images', 'public');
-        } else {
-            $validated['image'] = $news->image;
-        }
-
-        $news->update([
+        // Update main image (binary) if provided
+        $payload = [
             'title_fr' => $validated['title_fr'],
             'title_ar' => $validated['title_ar'],
             'content_fr' => $validated['content_fr'],
             'content_ar' => $validated['content_ar'],
-            'image' => $validated['image'],
-        ]);
+        ];
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $payload['image_blob'] = file_get_contents($file->getRealPath());
+            $payload['image_mime'] = $file->getClientMimeType();
+        }
+        $news->update($payload);
 
         // Add new extra images if any
         if ($request->hasFile('extra_images')) {
             foreach ($request->file('extra_images') as $image) {
-                $path = $image->store('news_images', 'public');
                 NewsImage::create([
                     'news_id' => $news->id,
-                    'image' => $path, // Only the relative path
+                    'data' => file_get_contents($image->getRealPath()),
+                    'mime' => $image->getClientMimeType(),
                 ]);
             }
         }
@@ -122,14 +122,8 @@ class NewsController extends Controller
     {
         $news = News::with('images')->findOrFail($id);
 
-        // Delete main image
-        if ($news->image) {
-            Storage::disk('public')->delete($news->image);
-        }
-
-        // Delete extra images
+        // Cascade deletes extra images via FK; nothing to delete on disk now
         foreach ($news->images as $image) {
-            Storage::disk('public')->delete($image->image);
             $image->delete();
         }
 

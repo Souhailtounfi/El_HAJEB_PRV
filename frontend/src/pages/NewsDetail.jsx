@@ -233,9 +233,9 @@ export default function NewsDetail() {
           <>
             {/* HERO */}
             <div className="relative mb-10 rounded-3xl overflow-hidden shadow ring-1 ring-green-200/60">
-              {news.image ? (
+        {news.image_base64 ? (
                 <img
-                  src={`http://localhost:8000/storage/${news.image}`}
+          src={news.image_base64}
                   alt={title}
                   className="w-full h-[420px] object-cover transition-transform duration-[2500ms] ease-out scale-[1.02]"
                 />
@@ -305,7 +305,7 @@ export default function NewsDetail() {
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {news.images.map((img) => {
-                    const src = `http://localhost:8000/storage/${img.image}`;
+                    const src = img.image_base64 || '';
                     return (
                       <div
                         key={img.id}

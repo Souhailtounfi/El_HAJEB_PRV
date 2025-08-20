@@ -143,13 +143,13 @@ function ENAStyle({dir}){return <style>{`
 .ena-section h2{margin:0 0 1.25rem;font-size:clamp(1.15rem,2.3vw,1.95rem);font-weight:800;letter-spacing:.05em;color:#065f46;text-transform:uppercase;}
 .ena-fig{margin:0 auto;max-width:780px;text-align:center;}
 .ena-fig img{width:100%;border-radius:1.4rem;box-shadow:0 22px 46px -18px rgba(0,0,0,.42);} 
-.ena-fig figcaption{margin-top:.7rem;font-size:.62rem;font-weight:600;opacity:.7;}
+.ena-fig figcaption{margin-top:.7rem;font-size:.74rem;font-weight:600;opacity:.85;}
 /* Table */
 .table-scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.4rem;}
-.ena-table{width:100%;border-collapse:collapse;font-size:.68rem;min-width:600px;}
+.ena-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:600px;}
 .ena-table th,.ena-table td{border:1px solid #10b98133;padding:.55rem .6rem;text-align:${dir==='rtl'?'right':'left'};}
 .ena-table thead th{background:linear-gradient(135deg,#10b981,#047857);color:#fff;font-weight:700;letter-spacing:.05em;white-space:nowrap;}
-.ena-table thead tr.subhead th{background:#ecfdf5;color:#065f46;font-size:.6rem;font-weight:700;}
+.ena-table thead tr.subhead th{background:#ecfdf5;color:#065f46;font-size:.7rem;font-weight:700;}
 .ena-table tbody td{background:#ffffff;font-weight:600;}
 .ena-table tbody tr:nth-child(even) td{background:#f0fdfa;}
 .ena-table tfoot th{background:#065f46;color:#fff;font-weight:700;}
@@ -157,21 +157,21 @@ function ENAStyle({dir}){return <style>{`
 /* Education grid */
 .edu-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
 .edu-metric{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #10b98133;border-radius:1.1rem;padding:1rem .9rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;box-shadow:0 10px 28px -14px rgba(0,0,0,.25);} 
-.edu-metric strong{font-size:.63rem;letter-spacing:.07em;color:#065f46;text-transform:uppercase;}
+.edu-metric strong{font-size:.74rem;letter-spacing:.07em;color:#065f46;text-transform:uppercase;}
 .edu-metric span{font-size:1.6rem;font-weight:800;line-height:1;background:linear-gradient(120deg,#10b981,#047857);-webkit-background-clip:text;color:transparent;}
 .edu-acts{grid-column:1/-1;background:#ffffffdd;border:1px solid #10b98133;border-radius:1.1rem;padding:1rem .95rem;box-shadow:0 10px 30px -16px rgba(0,0,0,.25);} 
-.edu-acts strong{font-size:.7rem;display:block;margin-bottom:.55rem;letter-spacing:.07em;font-weight:800;color:#065f46;text-transform:uppercase;}
-.acts-list{margin:0;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.55rem;font-size:.7rem;font-weight:600;}
+.edu-acts strong{font-size:.78rem;display:block;margin-bottom:.6rem;letter-spacing:.07em;font-weight:800;color:#065f46;text-transform:uppercase;}
+.acts-list{margin:0;padding-${dir==='rtl'?'right':'left'}:1.05rem;display:flex;flex-direction:column;gap:.6rem;font-size:.78rem;font-weight:600;}
 .acts-list li{position:relative;line-height:1.35;}
 .acts-list li:before{content:"";position:absolute;${dir==='rtl'?'right':'left'}:-.8rem;top:.42rem;width:.48rem;height:.48rem;border-radius:50%;background:linear-gradient(135deg,#10b981,#047857);} 
 /* Mobile card table */
 @media (max-width:760px){
   .ena-section{padding:1.2rem 1rem 1.55rem;}
-  .ena-table{font-size:.64rem;min-width:0;}
+  .ena-table{font-size:.7rem;min-width:0;}
   .responsive-table thead{position:absolute;left:-9999px;top:-9999px;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;border:1px solid #10b98133;background:#fff;border-radius:1rem;padding:.75rem .8rem;box-shadow:0 8px 22px -12px rgba(0,0,0,.18);margin-bottom:.85rem;}
   .responsive-table td{border:none!important;padding:.25rem .35rem;background:transparent!important;display:flex;flex-direction:column;gap:.15rem;}
-  .responsive-table td:before{content:attr(data-label);font-size:.6rem;font-weight:700;color:#047857;}
+  .responsive-table td:before{content:attr(data-label);font-size:.72rem;font-weight:700;color:#047857;}
   .ena-table tfoot{display:none;}
 }
 `}</style>;}

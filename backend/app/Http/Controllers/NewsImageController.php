@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NewsImage;
-use Illuminate\Support\Facades\Storage;
+// Storage no longer needed (images in DB)
 
 class NewsImageController extends Controller
 {
@@ -12,13 +12,8 @@ class NewsImageController extends Controller
     {
         $image = NewsImage::findOrFail($id);
 
-        // Delete image file
-        if ($image->image) {
-            Storage::disk('public')->delete($image->image);
-        }
-
-        $newsId = $image->news_id;
-        $image->delete();
+    $newsId = $image->news_id;
+    $image->delete(); // Only DB record
         \Log::info('NewsImage deleted:', ['id' => $id, 'news_id' => $newsId]);
 
         return response()->json([
@@ -30,19 +25,23 @@ class NewsImageController extends Controller
     public function store(\Illuminate\Http\Request $request, \App\Models\News $news)
     {
         $request->validate([
-            'images'   => 'required|array|min:1',
-            'images.*' => 'image|max:4096'
+            'images'   => 'required|array|min:1|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:8192'
         ]);
 
         $saved = [];
         foreach ($request->file('images', []) as $file) {
-            $path = $file->store('news_images', 'public');
-            $saved[] = $news->images()->create(['image' => $path]);
+            $saved[] = $news->images()->create([
+                'data' => file_get_contents($file->getRealPath()),
+                'mime' => $file->getClientMimeType(),
+            ]);
         }
 
+        // Reload to include base64 accessor
+        $fresh = $news->images()->latest()->take(count($saved))->get();
         return response()->json([
-            'message' => 'Images uploadées',
-            'images'  => $saved
+            'message' => 'Images uploaded',
+            'images'  => $fresh
         ], 201);
     }
 }

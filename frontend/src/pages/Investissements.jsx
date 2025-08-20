@@ -142,7 +142,7 @@ function InvestissementsStyle({dir}){return <style>{`
   .responsive-table tbody{display:flex;flex-direction:column;gap:1rem;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.65rem;border:1px solid #10b98140;background:#fff;border-radius:1.2rem;padding:1rem .95rem;box-shadow:0 10px 28px -14px rgba(0,0,0,.25);}
   .responsive-table td{border:none!important;padding:.4rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.25rem;font-size:.9rem;line-height:1.4;}
-  .responsive-table td:before{content:attr(data-label);font-size:.68rem;font-weight:700;color:#047857;letter-spacing:.03em;opacity:.9;}
+  .responsive-table td:before{content:attr(data-label);font-size:.74rem;font-weight:700;color:#047857;letter-spacing:.03em;opacity:.9;}
   .inv-table{min-width:0;font-size:.9rem;}
   .inv-table tbody td:first-child{font-size:.82rem;}
 }

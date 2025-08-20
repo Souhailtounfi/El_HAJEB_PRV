@@ -14,8 +14,25 @@ class News extends Model
         'title_ar',
         'content_fr',
         'content_ar',
-        'image'
+        'image_blob',
+        'image_mime'
     ];
+
+    protected $hidden = [
+        'image_blob',
+        'image_mime',
+        'updated_at'
+    ];
+
+    protected $appends = [
+        'image_base64'
+    ];
+
+    public function getImageBase64Attribute()
+    {
+        if (!$this->image_blob || !$this->image_mime) return null;
+        return 'data:' . $this->image_mime . ';base64,' . base64_encode($this->image_blob);
+    }
 
     public function images()
     {

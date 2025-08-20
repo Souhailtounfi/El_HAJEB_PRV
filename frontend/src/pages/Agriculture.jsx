@@ -231,8 +231,8 @@ function AgrStyle({dir}){return <style>{`
   .agr-table{font-size:.78rem;min-width:0;}
   .responsive-table thead{position:absolute;left:-9999px;top:-9999px;}
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;border:1px solid #10b98133;background:#fff;margin-bottom:.85rem;padding:.7rem .75rem;border-radius:1rem;box-shadow:0 8px 20px -12px rgba(0,0,0,.2);} 
-  .responsive-table td{border:none!important;padding:.36rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.18rem;font-size:.74rem;line-height:1.32;}
-  .responsive-table td:before{content:attr(data-label);font-size:.64rem;font-weight:700;color:#047857;letter-spacing:.02em;}
+  .responsive-table td{border:none!important;padding:.36rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.18rem;font-size:.78rem;line-height:1.35;}
+  .responsive-table td:before{content:attr(data-label);font-size:.72rem;font-weight:700;color:#047857;letter-spacing:.02em;}
   .agr-table tfoot{display:none;}
   .bullets{font-size:.8rem;line-height:1.45;}
   .lead{font-size:.95rem;line-height:1.6;}
