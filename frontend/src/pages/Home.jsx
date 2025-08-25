@@ -198,7 +198,7 @@ export default function Home() {
 
           <div className="flex flex-wrap justify-center gap-4 fade-section">
             <Link
-              to="/presentation-generale"
+              to="/presentation-generale/apercu-historique"
               className="px-7 py-3 rounded-full text-sm font-semibold bg-white text-green-700 shadow hover:shadow-lg hover:-translate-y-0.5 transition"
             >
               {lang === "ar" ? "اكتشف الإقليم" : "Découvrir la province"}
@@ -259,7 +259,7 @@ export default function Home() {
                   </p>
                   <div className="mt-auto pt-1">
                     <Link
-                      to="/presentation-generale"
+                      to="/presentation-generale/apercu-historique"
                       className="text-[11px] font-semibold tracking-wide text-green-600 group-hover:text-green-700 inline-flex items-center gap-1"
                     >
                       {lang === "ar" ? "المزيد" : "En savoir plus"}

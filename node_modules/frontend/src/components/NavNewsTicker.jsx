@@ -5,6 +5,7 @@ import api from "../services/api";
 /**
  * Subtle important news ticker (muted blue→red emphasis).
  */
+
 export default function NavNewsTicker({ lang = "fr" }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -43,11 +44,11 @@ export default function NavNewsTicker({ lang = "fr" }) {
 
   if (loading) {
     return (
-      <div ref={shellRef} className="nt-shell nt-loading">
-        <TickerStyle />
-        <div className="nt-track">
+      <div ref={shellRef} className="nt-green-shell nt-loading">
+        <TickerGreenStyle />
+        <div className="nt-green-track">
           {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} className="nt-skel" />
+            <span key={i} className="nt-green-skel" />
           ))}
         </div>
       </div>
@@ -59,18 +60,18 @@ export default function NavNewsTicker({ lang = "fr" }) {
   const loop = items.concat(items);
 
   return (
-    <div ref={shellRef} className="nt-shell">
-      <TickerStyle />
-      <div className="nt-viewport" aria-label={lang === "ar" ? "شريط الأخبار" : "Fil d’actualités"}>
-        <div className="nt-move">
+    <div ref={shellRef} className="nt-green-shell">
+      <TickerGreenStyle />
+      <div className="nt-green-viewport" aria-label={lang === "ar" ? "شريط الأخبار" : "Fil d’actualités"}>
+        <div className="nt-green-move">
           {loop.map((n, i) => (
             <Link
               key={n.id + "-" + i}
               to={`/news/${n.id}`}
-              className="nt-item"
+              className="nt-green-item"
               title={n.t}
             >
-              <span className="nt-date">
+              <span className="nt-green-date">
                 {n.d
                   ? new Date(n.d).toLocaleDateString(
                       lang === "ar" ? "ar-MA" : "fr-FR",
@@ -78,7 +79,7 @@ export default function NavNewsTicker({ lang = "fr" }) {
                     )
                   : "--"}
               </span>
-              <span className="nt-title">{n.t}</span>
+              <span className="nt-green-title">{n.t}</span>
             </Link>
           ))}
         </div>
@@ -87,116 +88,118 @@ export default function NavNewsTicker({ lang = "fr" }) {
   );
 }
 
-function TickerStyle() {
+function TickerGreenStyle() {
   return (
     <style>{`
-      /* Shell: muted deep navy to muted oxblood with a soft overlay */
-      .nt-shell{
-        position:relative;
-        height:46px;
-        background:
-          linear-gradient(90deg,#1d2935,#25354a 45%,#402a2e 70%,#4a2a2e);
-        backdrop-filter:blur(8px) saturate(140%);
-        border-bottom:1px solid rgba(255,255,255,0.04);
-        overflow:hidden;
-        padding:0 .65rem;
-        font-family:inherit;
+      .nt-green-shell {
+        position: relative;
+        height: 44px;
+        background: linear-gradient(90deg, #e8f7f1 0%, #e6f4ea 100%);
+        border-bottom: 1px solid #b7e4c7;
+        overflow: hidden;
+        padding: 0 .65rem;
+        font-family: inherit;
+        box-shadow: 0 2px 8px 0 rgba(60,120,80,0.04);
+        z-index: 40;
+        display: flex;
+        align-items: center;
       }
-      .nt-loading{display:flex;align-items:center;}
-      .nt-track{display:flex;gap:.55rem;}
-      .nt-skel{
-        width:40px;height:40px;border-radius:14px;
-        background:linear-gradient(90deg,#293944,#324653,#293944);
-        background-size:200% 100%;
-        animation:ntShimmer 2.1s ease-in-out infinite;
+      .nt-green-loading { display: flex; align-items: center; }
+      .nt-green-track { display: flex; gap: .55rem; }
+      .nt-green-skel {
+        width: 38px; height: 38px; border-radius: 12px;
+        background: linear-gradient(90deg, #d2f4e3 0%, #b7e4c7 100%);
+        background-size: 200% 100%;
+        animation: ntGreenShimmer 2.1s ease-in-out infinite;
       }
-      @keyframes ntShimmer{
-        0%{background-position:0 0;}
-        50%{background-position:120% 0;}
-        100%{background-position:0 0;}
-      }
-
-      .nt-viewport{
-        position:relative;
-        width:100%;height:100%;
-        mask:linear-gradient(90deg,transparent 0 2%,#000 10% 90%,transparent 98% 100%);
-        -webkit-mask:linear-gradient(90deg,transparent 0 2%,#000 10% 90%,transparent 98% 100%);
-      }
-      .nt-move{
-        position:absolute;top:50%;left:0;
-        display:flex;
-        gap:.65rem;
-        transform:translateY(-50%);
-        animation:ntLoop 44s linear infinite;
-        will-change:transform;
-      }
-      .nt-viewport:hover .nt-move{animation-play-state:paused;}
-      @keyframes ntLoop{
-        0%{transform:translateX(0) translateY(-50%);}
-        100%{transform:translateX(-50%) translateY(-50%);}
+      @keyframes ntGreenShimmer {
+        0% { background-position: 0 0; }
+        50% { background-position: 120% 0; }
+        100% { background-position: 0 0; }
       }
 
-      /* Item: subtle pill with soft gradient blue->red, low contrast borders */
-      .nt-item{
-        flex:0 0 auto;
-        display:inline-flex;
-        align-items:center;
-        gap:.55rem;
-        max-width:230px;
-        padding:.48rem .85rem;
-        border-radius:20px;
-        text-decoration:none;
-        background:linear-gradient(120deg,#2c4254 0%,#334c60 38%,#4a3940 72%,#543e41 100%);
-        border:1px solid rgba(255,255,255,0.08);
-        color:#f1f5f4;
-        font-size:11px;
-        font-weight:600;
-        letter-spacing:.25px;
-        line-height:1.05;
-        position:relative;
-        backdrop-filter:blur(3px);
-        transition:background .45s,border-color .45s,transform .45s;
+      .nt-green-viewport {
+        position: relative;
+        width: 100%; height: 100%;
+        mask: linear-gradient(90deg, transparent 0 2%, #000 10% 90%, transparent 98% 100%);
+        -webkit-mask: linear-gradient(90deg, transparent 0 2%, #000 10% 90%, transparent 98% 100%);
       }
-      .nt-item:before{
-        content:"";
-        position:absolute;inset:0;
-        background:linear-gradient(110deg,rgba(255,255,255,0.22),transparent 60%);
-        opacity:0;
-        border-radius:inherit;
-        transition:.5s;
-        pointer-events:none;
+      .nt-green-move {
+        position: absolute; top: 50%; left: 0;
+        display: flex;
+        gap: .65rem;
+        transform: translateY(-50%);
+        animation: ntGreenLoop 38s linear infinite;
+        will-change: transform;
       }
-      .nt-item:hover{
-        background:linear-gradient(120deg,#36576b 0%,#3f5f73 40%,#61484c 75%,#684d50 100%);
-        border-color:rgba(255,255,255,0.14);
-        transform:translateY(-2px);
-      }
-      .nt-item:hover:before{opacity:.55;}
-
-      .nt-date{
-        font-size:9px;
-        font-weight:700;
-        letter-spacing:.15em;
-        text-transform:uppercase;
-        color:#b3e4d3;
-        background:rgba(255,255,255,0.05);
-        padding:.3rem .55rem;
-        border-radius:12px;
-        line-height:1;
-      }
-      .nt-title{
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        color:#e8f7f1;
-        max-width:150px;
-        font-weight:500;
+      .nt-green-viewport:hover .nt-green-move { animation-play-state: paused; }
+      @keyframes ntGreenLoop {
+        0% { transform: translateX(0) translateY(-50%); }
+        100% { transform: translateX(-50%) translateY(-50%); }
       }
 
-      @media (max-width:640px){
-        .nt-shell{height:42px;padding:0 .45rem;}
-        .nt-item{max-width:200px;padding:.5rem .8rem;font-size:10px;}
-        .nt-title{max-width:120px;}
+      .nt-green-item {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        max-width: 220px;
+        padding: .45rem .9rem;
+        border-radius: 18px;
+        text-decoration: none;
+        background: rgba(255,255,255,0.85);
+        border: 1px solid #b7e4c7;
+        color: #247a4d;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .18px;
+        line-height: 1.1;
+        position: relative;
+        box-shadow: 0 1px 4px 0 rgba(60,120,80,0.06);
+        transition: background .35s, border-color .35s, transform .35s, color .35s;
+      }
+      .nt-green-item:before {
+        content: "";
+        position: absolute; inset: 0;
+        background: linear-gradient(110deg,rgba(60,180,120,0.08),transparent 60%);
+        opacity: 0;
+        border-radius: inherit;
+        transition: .5s;
+        pointer-events: none;
+      }
+      .nt-green-item:hover {
+        background: #d2f4e3;
+        border-color: #95d5b2;
+        color: #155c36;
+        transform: translateY(-2px) scale(1.03);
+      }
+      .nt-green-item:hover:before { opacity: .35; }
+
+      .nt-green-date {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #40916c;
+        background: #e9fbe5;
+        padding: .28rem .5rem;
+        border-radius: 10px;
+        line-height: 1;
+        margin-right: 2px;
+      }
+      .nt-green-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #247a4d;
+        max-width: 140px;
+        font-weight: 500;
+      }
+
+      @media (max-width:640px) {
+        .nt-green-shell { height: 40px; padding: 0 .35rem; }
+        .nt-green-item { max-width: 140px; padding: .4rem .7rem; font-size: 10.5px; }
+        .nt-green-title { max-width: 80px; }
       }
     `}</style>
   );
