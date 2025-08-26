@@ -7,12 +7,7 @@ import rr4 from '../assets/rr4.png';
 import rr5 from '../assets/rr5.png';
 
 /*
-  Responsive, bilingual (FR / AR) page for "Réseau Routier" & Transport.
-  Design goals:
-  - Distinct modern style (glass cards + earthy road / rail accent gradients)
-  - Mobile-first stacked cards, desktop split + media gallery
-  - Smooth subtle animations (fade / slide) without heavy libs
-  - Data kept in structured objects for easy maintenance / translation
+page "Réseau Routier" & Transport.
 */
 
 export default function ReseauRoutier(){

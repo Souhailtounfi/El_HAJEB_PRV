@@ -8,13 +8,6 @@ import agr5 from '../assets/agr5.png';
 import agr6 from '../assets/agr6.png';
 
 /* Agriculture Page
-   - Modern hero + key potential stats
-   - Land distribution table
-   - Several production tables (vegetale, légumineuses, fourragères, maraichères, arboriculture, unités de transformation)
-   - Animal production tables
-   - Opportunités (bulleted)
-   - Bilingual + RTL + responsive tables -> cards on mobile
-   - Images gallery segments contextually placed
 */
 
 export default function Agriculture(){

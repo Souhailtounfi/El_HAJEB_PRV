@@ -3,11 +3,6 @@ import { useTranslation } from 'react-i18next';
 import carImg from '../assets/car.png';
 
 /* Carrières (Quarries) Page
-   - Hero with image
-   - Grouped table (cercle / pachalik with sub communes + counts)
-   - Legal status distribution + exploited product types
-   - Bilingual (FR / AR) + RTL
-   - Responsive: table -> cards on small screens
 */
 
 export default function Carrieres(){

@@ -92,7 +92,7 @@ export default function SituationGeographique() {
               </div>
             </div>
 
-            {/* Then Text */}
+            
             <p className="geo-p">{t.intro1}</p>
             <p className="geo-p geo-delim">{t.delim}</p>
             <ul className="geo-list">

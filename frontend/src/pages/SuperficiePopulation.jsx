@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageSidebar from '../components/PageSidebar';
 
-// MOBILE FIRST COMPLETE REDESIGN (lightweight + better readability)
 const SLUG = 'superficie-population';
 
 export default function SuperficiePopulation(){

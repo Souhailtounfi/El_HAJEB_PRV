@@ -5,10 +5,7 @@ import js2 from '../assets/js2.png';
 import js3 from '../assets/js3.png';
 
 /*
-  Jeunesse & Sports (FR / AR)
-  - Matches modern glass card aesthetic of other added pages
-  - 3 image gallery with captions
-  - Facilities table (bilingual)
+  Jeunesse & Sports 
 */
 
 export default function JeunesseSports(){

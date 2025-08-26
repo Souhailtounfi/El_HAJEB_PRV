@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Modern, clean, white card-based Environment page
+//Environment page
 export default function Environnement() {
   const { i18n } = useTranslation();
   const lang = i18n.language;
@@ -10,7 +10,6 @@ export default function Environnement() {
   const dir = isAr ? 'rtl' : 'ltr';
   useEffect(() => { document.documentElement.dir = dir; }, [dir]);
 
-  // ...existing content objects (fr, ar, t)...
   /* ----------------------------- FR CONTENT ----------------------------- */
   const fr = {
     title: 'Environnement',

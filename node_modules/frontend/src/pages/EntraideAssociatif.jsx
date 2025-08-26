@@ -4,9 +4,6 @@ import enaImg from '../assets/ena.png';
 
 /*
   Entraide Nationale & Tissu Associatif (FR / AR)
-  - Mirrors style of ProtectionCivile / EauElectricite pages (glass cards)
-  - Tables kept in simple data arrays; bilingual labels
-  - Responsive + RTL aware
 */
 
 export default function EntraideAssociatif(){

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import elecImgSrc from '../assets/eel1.png'; // if missing, bundler will show error (preferred explicit)
+import elecImgSrc from '../assets/eel1.png'; 
+
+
 
 export default function EauElectricite(){
   const { i18n } = useTranslation();

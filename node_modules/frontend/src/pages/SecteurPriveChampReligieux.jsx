@@ -3,14 +3,6 @@ import { useTranslation } from 'react-i18next';
 import cr1 from '../assets/cr1.png';
 import cr2 from '../assets/cr2.png';
 
-/*
-  Secteur Privé & Champ Religieux (merged page)
-  - Profession liberal table
-  - Religious field statistics with images
-  - Bilingual (FR / AR) + RTL support
-  - Mobile responsive: table turns into cards
-*/
-
 export default function SecteurPriveChampReligieux(){
   const { i18n } = useTranslation();
   const lang = i18n.language;

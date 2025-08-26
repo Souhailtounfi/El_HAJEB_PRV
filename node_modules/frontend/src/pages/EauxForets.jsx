@@ -5,15 +5,7 @@ import eef2 from '../assets/eef2.png';
 import eef3 from '../assets/eef3.png';
 import eef4 from '../assets/eef4.png';
 
-/* Eaux & Forêts Page (Forest & Water Resources)
-   - Hero + Intro
-   - Sections: Importance (Superficie + Peuplement), Production de plants, Equipements forestiers, Chasse, Réserves, Amodiations
-   - Tables similar styling to Agriculture / Carrières
-   - Responsive tables -> cards on mobile
-   - Slightly larger & readable mobile fonts
-   - Bilingual (FR / AR) with RTL support
-   NOTE: Some detailed lists (localisations / espèces) derived from provided screenshots; adjust if exact data differs.
-*/
+/* Page Eaux & Forêts */
 
 export default function EauxForets(){
   const { i18n } = useTranslation();

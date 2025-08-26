@@ -4,9 +4,6 @@ import pcImg from '../assets/pc.png';
 
 /*
   Protection Civile page (FR / AR)
-  - Lightweight bilingual content object
-  - Modern glass / gradient cards for sections
-  - Responsive + RTL aware
 */
 
 export default function ProtectionCivile(){

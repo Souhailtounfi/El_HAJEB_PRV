@@ -2,13 +2,6 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /* Page: Banque de Données des Investissements (Province El Hajeb)
-   Design goals:
-   - Large, very clear typography (better than other pages for dense tabular data)
-   - Distinct "financial / investment" visual theme: emerald + subtle gold accents, ledger style headers
-   - Sticky wide title band
-   - Multi‑section structure allowing future extension (filters later)
-   - Responsive table -> stacked cards (data-label pattern)
-   - Scroll shadow helpers for wide tables
 */
 
 export default function Investissements(){

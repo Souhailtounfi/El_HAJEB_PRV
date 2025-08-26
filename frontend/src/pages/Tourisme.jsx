@@ -8,11 +8,6 @@ import tr5 from '../assets/tr5.png';
 import tr6 from '../assets/tr6.png';
 
 /* Tourisme Page
-   - Title isolated in hero bar (no paragraph inside hero besides title)
-   - Content sections below
-   - Bigger fonts for desktop & mobile than other pages
-   - Responsive gallery & tables->cards
-   - Remove alphabetical list style (use custom bullets)
 */
 
 export default function Tourisme(){

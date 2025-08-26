@@ -2,13 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /* Industrie & Commerce Page
-   - Sections: Industrie (intro + grands indicateurs + répartition sectorielle + unités + répartition productive)
-               Commerce (appareil, infrastructures, projets, ventes farines, souks, approvisionnement)
-   - Responsive tables -> cards (data-label)
-   - Slightly larger clear fonts (esp. mobile)
-   - Bilingual FR / AR with RTL support
-   NOTE: Données issues des captures fournies (certaines valeurs susceptibles d'ajustement). */
-
+*/
 export default function IndustrieCommerce(){
   const { i18n } = useTranslation();
   const lang = i18n.language; const isAr = lang.startsWith('ar'); const dir = isAr? 'rtl':'ltr';

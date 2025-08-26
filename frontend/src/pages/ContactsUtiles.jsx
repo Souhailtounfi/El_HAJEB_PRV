@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-/* Contacts Utiles Page
-   - Emergency numbers table + useful phones list
-   - Large readable fonts, consistent emerald theme
-   - Bilingual skeleton (Arabic translation placeholders for quick future translation)
-*/
+/* Contacts Utiles Page*/
 
 export default function ContactsUtiles(){
   const { i18n } = useTranslation();

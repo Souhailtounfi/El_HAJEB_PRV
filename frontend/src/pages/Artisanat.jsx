@@ -3,12 +3,7 @@ import { useTranslation } from 'react-i18next';
 import art1 from '../assets/art1.png';
 import art2 from '../assets/art2.png';
 
-/* Page: Artisanat
-   Design goals: "very artistic" mixing classic (parchment / serif) + futuristic glass gradients.
-   - Isolated ornamental title strip
-   - Rich readable typography (larger base fonts desktop & mobile)
-   - Soft animated gradient canvas + subtle paper fiber noise overlay
-   - Table with calligraphic header / responsive card mode
+/* Page Artisanat
 */
 
 export default function Artisanat(){
