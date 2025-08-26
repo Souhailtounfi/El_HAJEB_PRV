@@ -24,6 +24,7 @@ export default function NewsList() {
   const setSearch = (v) => handleSearchChange(v);
 
   const [news, setNews] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [sort, setSort] = useState("newest");
@@ -31,17 +32,27 @@ export default function NewsList() {
   const [selected, setSelected] = useState([]); // selected ids in admin board
   const isAdmin = !!user?.is_admin;
   const [filterHasImage, setFilterHasImage] = useState(false); // admin filter
+  const [categoryFilter, setCategoryFilter] = useState("");
 
-  // Fetch news
+  // Fetch news and categories
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const res = await api.get("/news");
-        if (mounted) setNews(res.data || []);
+        const [newsRes, catRes] = await Promise.all([
+          api.get("/news"),
+          api.get("/categories")
+        ]);
+        if (mounted) {
+          setNews(newsRes.data || []);
+          setCategories(catRes.data || []);
+        }
       } catch {
-        if (mounted) setNews([]);
+        if (mounted) {
+          setNews([]);
+          setCategories([]);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -73,6 +84,9 @@ export default function NewsList() {
           arContent.includes(term)
         );
       });
+    if (categoryFilter) {
+      arr = arr.filter(n => String(n.category_id) === String(categoryFilter));
+    }
     if (filterHasImage) {
       arr = arr.filter(n => !!(n.image_base64 || n.image));
     }
@@ -83,7 +97,7 @@ export default function NewsList() {
         if (sort === "oldest") return da - db;
         return 0;
       });
-  }, [news, search, sort, filterHasImage]);
+  }, [news, search, sort, filterHasImage, categoryFilter]);
 
   const handleDelete = async (id) => {
     if (!window.confirm(t("confirm_delete"))) return;
@@ -178,6 +192,14 @@ export default function NewsList() {
                 <path d="M21 21l-4.35-4.35" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
+            <select value={categoryFilter} onChange={e=>setCategoryFilter(e.target.value)} className="sort">
+              <option value="">{lang === "ar" ? "كل الفئات" : "Toutes catégories"}</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)}
+                </option>
+              ))}
+            </select>
             <select value={sort} onChange={(e) => setSort(e.target.value)} className="sort">
               <option value="newest">{lang === "ar" ? "الأحدث" : "Plus récent"}</option>
               <option value="oldest">{lang === "ar" ? "الأقدم" : "Plus ancien"}</option>
@@ -283,6 +305,7 @@ export default function NewsList() {
                       <tr>
                         <th className="sel"><input type="checkbox" checked={!!allFilteredIds.length && allSelected} onChange={toggleSelectAll} aria-label="select all" /></th>
                         <th>ID</th>
+                        <th>{lang==='ar'? 'الفئة':'Catégorie'}</th>
                         <th>{lang==='ar'? 'العنوان (FR)':'Titre (FR)'}</th>
                         <th>{lang==='ar'? 'العنوان (AR)':'Titre (AR)'}</th>
                         <th>{lang==='ar'? 'طول النص':'Taille texte'}</th>
@@ -295,10 +318,11 @@ export default function NewsList() {
                       {filtered.map(item => {
                         const frLen = plain(item.content_fr||'').length;
                         const arLen = plain(item.content_ar||'').length;
+                        const cat = categories.find(c=>c.id===item.category_id);
                         return (
                           <tr key={item.id} className={selected.includes(item.id)?'row-selected':''}>
                             <td className="sel"><input type="checkbox" checked={selected.includes(item.id)} onChange={()=>toggleSelect(item.id)} aria-label={`select-${item.id}`} /></td>
-                            <td>{item.id}</td>
+                            <td>{cat ? (lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)) : '—'}</td>
                             <td className="ellipsis" title={item.title_fr}>{item.title_fr || '—'}</td>
                             <td className="ellipsis" title={item.title_ar}>{item.title_ar || '—'}</td>
                             <td><span className="pill small" title={`FR:${frLen} AR:${arLen}`}>{frLen}/{arLen}</span></td>
@@ -363,6 +387,7 @@ export default function NewsList() {
                   ? (item.content_ar || item.content_fr)
                   : (item.content_fr || item.content_ar);
               const snippet = plain(rawContent).slice(0, 240) + (plain(rawContent).length > 240 ? "…" : "");
+              const cat = categories.find(c=>c.id===item.category_id);
               return (
                 <div key={item.id} className="news-card group">
                   <div className="img-wrap">
@@ -380,7 +405,7 @@ export default function NewsList() {
                     )}
                     <div className="overlay" />
                     <div className="top-tags">
-                      <span className="tag kind">{t("announcement")}</span>
+                      <span className="tag kind">{cat ? (lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)) : (lang==="ar"?"عام":"Générale")}</span>
                       <span className="date">{formatDate(item.created_at)}</span>
                     </div>
                   </div>

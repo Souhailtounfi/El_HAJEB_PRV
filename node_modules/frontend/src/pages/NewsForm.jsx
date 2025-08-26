@@ -4,6 +4,19 @@ import api from "../services/api";
 import { useTranslation } from "react-i18next";
 
 export default function NewsForm() {
+  const [fields, setFields] = useState({
+    title_fr: "",
+    title_ar: "",
+    content_fr: "",
+    content_ar: "",
+    image: null,
+    extra_images: [],
+    category_id: ""
+  });
+  const [categories, setCategories] = useState([]);
+  const [newCat, setNewCat] = useState({ fr: '', ar: '' });
+  const [catError, setCatError] = useState("");
+  const [catLoading, setCatLoading] = useState(false);
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const dir = lang === "ar" ? "rtl" : "ltr";
@@ -13,18 +26,16 @@ export default function NewsForm() {
   const [submitting, setSubmitting] = useState(false);
   const [preview, setPreview] = useState(null);
   const [extraPreviews, setExtraPreviews] = useState([]); // [{file, url}]
-  const [existingGallery, setExistingGallery] = useState([]); // existing images from DB [{id,url}]
+  const [existingGallery, setExistingGallery] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const dropRef = useRef(null);
-
-  const [fields, setFields] = useState({
-    title_fr: "",
-    title_ar: "",
-    content_fr: "",
-    content_ar: "",
-    image: null,
-    extra_images: [] // array of File
-  });
+  // Fetch categories on mount
+  useEffect(() => {
+    api.get('/categories').then(res => {
+      setCategories(res.data || []);
+    });
+    // eslint-disable-next-line
+  }, []);
   const mainInputRef = useRef(null);
   const galleryInputRef = useRef(null);
 
@@ -97,6 +108,8 @@ export default function NewsForm() {
         alert(`Some files exceeded ${MAX_SIZE_MB}MB and were skipped.`);
       }
       setExtraFilePreviews(valid);
+    } else if (name === "cat_fr" || name === "cat_ar") {
+      setNewCat(n => ({ ...n, [name === "cat_fr" ? "fr" : "ar"]: value }));
     } else {
       setFields(f => ({ ...f, [name]: value }));
     }
@@ -117,11 +130,30 @@ export default function NewsForm() {
   const handleSubmit = async e => {
     e.preventDefault();
     setSubmitting(true);
+    let categoryId = fields.category_id;
+    // If no category_id but newCat is filled, create the category first
+    if (!categoryId && newCat.fr && newCat.ar) {
+      try {
+        const res = await api.post("/categories", {
+          name_fr: newCat.fr,
+          name_ar: newCat.ar
+        });
+        categoryId = res.data?.data?.id || res.data?.id;
+        setCategories(prev => [...prev, res.data.data || res.data]);
+        setFields(f => ({ ...f, category_id: categoryId }));
+      } catch (err) {
+        setSubmitting(false);
+        setCatError(err?.response?.data?.message || err.message);
+        alert((lang === 'ar' ? 'فشل إضافة الفئة: ' : 'Erreur catégorie: ') + (err?.response?.data?.message || err.message));
+        return;
+      }
+    }
     const formData = new FormData();
     formData.append("title_fr", fields.title_fr);
     formData.append("title_ar", fields.title_ar);
     formData.append("content_fr", fields.content_fr);
     formData.append("content_ar", fields.content_ar);
+    if (categoryId) formData.append("category_id", categoryId);
     if (fields.image) formData.append("image", fields.image);
     if (fields.extra_images?.length) {
       fields.extra_images.slice(0,MAX_EXTRA).forEach(f=>formData.append("extra_images[]", f));
@@ -183,21 +215,138 @@ export default function NewsForm() {
             <p>{tf("provide_bilingual_titles", "Fournissez les titres en deux langues")}</p>
           </header>
           <div className="grid two">
+            {/* Only titles here, category moved below */}
+            <div className="field">
+              <label htmlFor="title_fr">{tf("title_fr", "Titre (FR)")} *</label>
+              <div className="control">
+                <input id="title_fr" name="title_fr" value={fields.title_fr} maxLength={maxTitle} onChange={handleChange} required style={{borderRadius:14}} />
+                <span className="count" data-over={len(fields.title_fr) > maxTitle * .9}>{len(fields.title_fr)}/{maxTitle}</span>
+              </div>
+            </div>
+            <div className="field" dir="rtl">
+              <label htmlFor="title_ar">{tf("title_ar", "العنوان (AR)")} *</label>
+              <div className="control">
+                <input id="title_ar" name="title_ar" value={fields.title_ar} maxLength={maxTitle} onChange={handleChange} required style={{borderRadius:14}} />
+                <span className="count" data-over={len(fields.title_ar) > maxTitle * .9}>{len(fields.title_ar)}/{maxTitle}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="section" style={{marginTop:32, border:'2px solid #0d9488', borderRadius:18, background:'#f8fbfb'}}>
+          <header className="section-head">
+            <h2 style={{color:'#0d9488'}}>{lang === 'ar' ? 'الفئة' : 'Catégorie'}</h2>
+            <span style={{fontSize:12, color:'#61737f'}}>{lang === 'ar' ? 'حدد أو أضف فئة للخبر' : 'Choisissez ou ajoutez une catégorie pour l\'article'}</span>
+          </header>
           <div className="field">
-            <label htmlFor="title_fr">{tf("title_fr", "Titre (FR)")} *</label>
-            <div className="control">
-              <input id="title_fr" name="title_fr" value={fields.title_fr} maxLength={maxTitle} onChange={handleChange} required />
-              <span className="count" data-over={len(fields.title_fr) > maxTitle * .9}>{len(fields.title_fr)}/{maxTitle}</span>
+            <label htmlFor="category_id" style={{fontWeight:700, fontSize:'1.1em', color:'#0d9488'}}>
+              <span style={{marginRight:6, verticalAlign:'middle'}}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{display:'inline',verticalAlign:'middle'}}><circle cx="10" cy="10" r="9" stroke="#0d9488" strokeWidth="2"/><path d="M10 6v8M6 10h8" stroke="#0d9488" strokeWidth="2" strokeLinecap="round"/></svg>
+              </span>
+              {lang === 'ar' ? 'الفئة' : 'Catégorie'} *
+            </label>
+            <div className="flex gap-2 items-center" style={{marginBottom:12}}>
+              <select
+                id="category_id"
+                name="category_id"
+                className="control"
+                value={fields.category_id}
+                onChange={handleChange}
+                required
+                style={{ minWidth: 180, borderRadius:14, border:'2.5px solid #0d9488', background:'#fff', fontWeight:600, fontSize:'1.05em', color:'#0d9488', boxShadow:'0 2px 8px -2px #0d948822', paddingLeft: '1.2em', paddingRight: '1.2em', marginLeft: 2, marginRight: 2 }}
+              >
+                <option value="" style={{color:'#61737f',fontWeight:400, padding:'0.5em 1.2em', margin:'0.2em 0'}}>{lang === 'ar' ? 'اختر فئة موجودة أو أضف جديدة... / ' + tf('select_existing_or_add', 'Sélectionner une catégorie existante ou ajouter...') : tf('select_existing_or_add', 'Sélectionner une catégorie existante ou ajouter...') + ' / اختر فئة موجودة أو أضف جديدة...'}</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id} style={{borderRadius:10, padding:'0.5em 1.2em', margin:'0.2em 0'}}>
+                    {lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div style={{background:'#e0f7fa', border:'2px dashed #0d9488', borderRadius:14, padding:'1.1rem 1.2rem', marginTop:10, marginBottom:10, boxShadow:'0 2px 12px -4px #0d948822'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'1.2rem',marginBottom:'.7rem'}}>
+                <span style={{fontWeight:700, color:'#0d9488', fontSize:'1.05em'}}>
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{display:'inline',verticalAlign:'middle',marginRight:4}}><rect x="2" y="2" width="16" height="16" rx="4" stroke="#0d9488" strokeWidth="2"/><path d="M10 6v8M6 10h8" stroke="#0d9488" strokeWidth="2" strokeLinecap="round"/></svg>
+                  {tf('add_new_category', (lang === 'ar' ? 'إضافة فئة جديدة' : 'Ajouter une nouvelle catégorie'))}
+                </span>
+              </div>
+              <div className="mt-3 flex gap-3" style={{alignItems:'flex-end',marginBottom:'.7rem'}}>
+                <div style={{display:'flex',flexDirection:'column',gap:'.3rem'}}>
+                  <label style={{fontSize:'.7rem',fontWeight:600}} htmlFor="cat_fr">{tf('category_name_fr', (lang==='ar' ? 'الاسم بالفرنسية' : 'Nom (FR)'))}</label>
+                  <input
+                    id="cat_fr"
+                    name="cat_fr"
+                    type="text"
+                    className="control"
+                    style={{ minWidth: 140, borderRadius:12, border:'2px solid #0d9488', background:'#fff', padding:'0.85rem 1.1rem', fontWeight:600, color:'#0d9488' }}
+                    placeholder={tf('category_name_fr_placeholder', lang === "ar" ? "الاسم بالفرنسية" : "Nom de la catégorie (FR)")}
+                    value={newCat.fr || ''}
+                    onChange={handleChange}
+                    autoComplete="off"
+                  />
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:'.3rem'}}>
+                  <label style={{fontSize:'.7rem',fontWeight:600}} htmlFor="cat_ar">{tf('category_name_ar', (lang==='ar' ? 'الاسم بالعربية' : 'Nom (AR)'))}</label>
+                  <input
+                    id="cat_ar"
+                    name="cat_ar"
+                    type="text"
+                    className="control"
+                    dir="rtl"
+                    style={{ minWidth: 140, borderRadius:12, border:'2px solid #0d9488', background:'#fff', padding:'0.85rem 1.1rem', fontWeight:600, color:'#0d9488' }}
+                    placeholder={tf('category_name_ar_placeholder', lang === "ar" ? "الاسم بالعربية" : "Nom de la catégorie (AR)")}
+                    value={newCat.ar || ''}
+                    onChange={handleChange}
+                    autoComplete="off"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn primary small"
+                  style={{
+                    borderRadius:14,
+                    fontWeight:700,
+                    fontSize:'.92em',
+                    padding:'0.7rem 1.1rem',
+                    display:'flex',
+                    alignItems:'center',
+                    gap:8,
+                    background:'linear-gradient(90deg,#0d9488,#10b981)',
+                    color:'#fff',
+                    border:'none',
+                    marginLeft:10,
+                    boxShadow:'0 2px 8px -2px #0d9488'
+                  }}
+                  disabled={catLoading || !newCat.fr || !newCat.ar}
+                  onClick={async () => {
+                    setCatError("");
+                    if (!newCat.fr.trim() || !newCat.ar.trim()) {
+                      setCatError(tf('category_both_names_required', 'Veuillez entrer les deux noms') + ' / ' + (lang === "ar" ? "يرجى إدخال الاسمين" : "Veuillez entrer les deux noms"));
+                      return;
+                    }
+                    setCatLoading(true);
+                    try {
+                      const res = await api.post("/categories", {
+                        name_fr: newCat.fr.trim(),
+                        name_ar: newCat.ar.trim()
+                      });
+                      const newCategory = res.data?.data || res.data;
+                      setCategories(prev => [...prev, newCategory]);
+                      setFields(f => ({ ...f, category_id: newCategory.id }));
+                      setNewCat({ fr: '', ar: '' });
+                    } catch (err) {
+                      setCatError((err?.response?.data?.message || err.message) + ' / ' + (lang === 'ar' ? 'فشل إضافة الفئة' : 'Erreur catégorie'));
+                    } finally {
+                      setCatLoading(false);
+                    }
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{display:'inline',verticalAlign:'middle',marginRight:4}}><circle cx="10" cy="10" r="9" stroke="#fff" strokeWidth="2"/><path d="M10 6v8M6 10h8" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                  {catLoading ? (tf('adding', 'Ajout...') + ' / ' + (lang === "ar" ? "جارٍ الإضافة..." : "Ajout...")) : (tf('add_category', (lang === "ar" ? "إضافة الفئة" : "Ajouter")))}
+                </button>
+              </div>
+              {catError && <div className="text-red-600 text-xs font-semibold mt-1">{catError}</div>}
             </div>
           </div>
-          <div className="field" dir="rtl">
-            <label htmlFor="title_ar">{tf("title_ar", "العنوان (AR)")} *</label>
-            <div className="control">
-              <input id="title_ar" name="title_ar" value={fields.title_ar} maxLength={maxTitle} onChange={handleChange} required />
-              <span className="count" data-over={len(fields.title_ar) > maxTitle * .9}>{len(fields.title_ar)}/{maxTitle}</span>
-            </div>
-          </div>
-        </div>
         </section>
         <section className="section">
           <header className="section-head">

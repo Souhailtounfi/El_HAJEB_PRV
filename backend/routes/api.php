@@ -6,6 +6,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\NewsImageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
+// Categories
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'store']);
 
 // Public (no CSRF, no stateful sanctum)
 Route::post('/login', [AuthController::class, 'login'])

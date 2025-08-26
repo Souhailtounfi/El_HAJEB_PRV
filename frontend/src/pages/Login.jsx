@@ -25,10 +25,19 @@ export default function Login() {
       await login(email, password);
       navigate("/news");
     } catch (err) {
+      // Show detailed error for debugging
+      let backendMsg = err?.response?.data?.message;
+      let status = err?.response?.status;
+      let raw = err?.toString();
+      let details = [];
+      if (status) details.push(`Status: ${status}`);
+      if (backendMsg) details.push(`Backend: ${backendMsg}`);
+      if (raw && !backendMsg) details.push(`Raw: ${raw}`);
       setError(
-        err?.response?.data?.message === "Invalid credentials"
+        (backendMsg === "Invalid credentials"
           ? t("invalid_credentials") || (lang === "ar" ? "بيانات الدخول غير صحيحة" : "Identifiants invalides")
-          : t("login_error") || (lang === "ar" ? "خطأ في تسجيل الدخول" : "Erreur de connexion")
+          : t("login_error") || (lang === "ar" ? "خطأ في تسجيل الدخول" : "Erreur de connexion")) +
+        (details.length ? `\n${details.join(" | ")}` : "")
       );
     } finally {
       setLoading(false);

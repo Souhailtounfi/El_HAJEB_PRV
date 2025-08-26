@@ -15,11 +15,11 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (!auth()->attempt($credentials)) {
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+        if (!$user || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user = auth()->user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -35,11 +35,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
+        $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully']);
     }
 }

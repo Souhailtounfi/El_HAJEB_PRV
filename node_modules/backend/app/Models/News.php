@@ -10,6 +10,7 @@ class News extends Model
     use HasFactory;
 
     protected $fillable = [
+        'category_id',
         'title_fr',
         'title_ar',
         'content_fr',
@@ -37,5 +38,10 @@ class News extends Model
     public function images()
     {
         return $this->hasMany(NewsImage::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

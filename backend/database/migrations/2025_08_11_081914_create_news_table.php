@@ -13,14 +13,16 @@ return new class extends Migration {
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->string('title_fr');
             $table->string('title_ar');
             $table->text('content_fr');
             $table->text('content_ar');
-            // Use binary then alter to LONGBLOB (Laravel has no longBlob helper)
             $table->binary('image_blob')->nullable();
             $table->string('image_mime', 100)->nullable();
             $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
         });
         // Force column to LONGBLOB for large images (MySQL only)
         if (DB::getDriverName() === 'mysql') {

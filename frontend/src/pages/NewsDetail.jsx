@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+// import api from "../services/api"; // removed duplicate
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
@@ -17,14 +18,27 @@ export default function NewsDetail() {
   const [lightbox, setLightbox] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [imgDeleting, setImgDeleting] = useState(null);
+  const [category, setCategory] = useState(null);
 
   const fetchNews = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get(`/news/${id}`);
       setNews(res.data);
+      // Fetch category if present
+      if (res.data && res.data.category_id) {
+        try {
+          const catRes = await api.get(`/categories/${res.data.category_id}`);
+          setCategory(catRes.data);
+        } catch {
+          setCategory(null);
+        }
+      } else {
+        setCategory(null);
+      }
     } catch {
       setNews(null);
+      setCategory(null);
     } finally {
       setLoading(false);
     }
@@ -250,6 +264,11 @@ export default function NewsDetail() {
                   {title}
                 </h1>
                 <div className="flex flex-wrap gap-3 text-[11px] sm:text-xs font-semibold">
+                  {category && (
+                    <span className="px-3 py-1 rounded-full bg-emerald-600/90 text-white shadow">
+                      {category.name}
+                    </span>
+                  )}
                   <span className="px-3 py-1 rounded-full bg-green-500/90 text-white shadow">
                     {t("announcement")}
                   </span>

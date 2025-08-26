@@ -10,25 +10,49 @@ use Illuminate\Support\Facades\Log;
 class NewsController extends Controller
 {
     // Get all news with images
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(News::with('images')->latest()->get());
+        $query = News::with(['images', 'category'])->latest();
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
+        return response()->json($query->get());
     }
 
     // Create new news with images
     public function store(Request $request)
     {
+
         $validated = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
+            'name_fr' => 'nullable|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'title_fr' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
             'content_fr' => 'required|string',
             'content_ar' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192', // 8MB + webp
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:8192',
             'extra_images' => 'nullable|array|max:10',
             'extra_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
-        // Store main image binary inside DB
+        // Assign categoryId after validation
+        $categoryId = $validated['category_id'] ?? null;
+        // If no category_id but both names are provided, create the category
+        if (!$categoryId && !empty($validated['name_fr']) && !empty($validated['name_ar'])) {
+            $cat = \App\Models\Category::firstOrCreate(
+                [
+                    'name_fr' => $validated['name_fr'],
+                    'name_ar' => $validated['name_ar']
+                ],
+                [
+                    'name_fr' => $validated['name_fr'],
+                    'name_ar' => $validated['name_ar']
+                ]
+            );
+            $categoryId = $cat->id;
+        }
+
         $imageBlob = null;
         $imageMime = null;
         if ($request->hasFile('image')) {
@@ -38,6 +62,7 @@ class NewsController extends Controller
         }
 
         $news = News::create([
+            'category_id' => $categoryId,
             'title_fr' => $validated['title_fr'],
             'title_ar' => $validated['title_ar'],
             'content_fr' => $validated['content_fr'],
@@ -46,7 +71,6 @@ class NewsController extends Controller
             'image_mime' => $imageMime,
         ]);
 
-        // Store extra images (binary)
         if ($request->hasFile('extra_images')) {
             foreach ($request->file('extra_images') as $image) {
                 NewsImage::create([
@@ -59,7 +83,7 @@ class NewsController extends Controller
 
         return response()->json([
             'message' => 'News created successfully',
-            'data' => $news->load('images'),
+            'data' => $news->load(['images', 'category']),
         ], 201);
     }
 
@@ -67,7 +91,7 @@ class NewsController extends Controller
     // Show single news with images
     public function show($id)
     {
-        $news = \App\Models\News::with('images')->findOrFail($id);
+        $news = \App\Models\News::with(['images', 'category'])->findOrFail($id);
         return response()->json($news);
     }
 
@@ -77,6 +101,7 @@ class NewsController extends Controller
         $news = News::findOrFail($id);
 
         $validated = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
             'title_fr' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
             'content_fr' => 'required|string',
@@ -86,8 +111,8 @@ class NewsController extends Controller
             'extra_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:8192',
         ]);
 
-        // Update main image (binary) if provided
         $payload = [
+            'category_id' => $validated['category_id'] ?? $news->category_id,
             'title_fr' => $validated['title_fr'],
             'title_ar' => $validated['title_ar'],
             'content_fr' => $validated['content_fr'],
@@ -100,7 +125,6 @@ class NewsController extends Controller
         }
         $news->update($payload);
 
-        // Add new extra images if any
         if ($request->hasFile('extra_images')) {
             foreach ($request->file('extra_images') as $image) {
                 NewsImage::create([
@@ -113,7 +137,7 @@ class NewsController extends Controller
 
         return response()->json([
             'message' => 'News updated successfully',
-            'data' => $news->fresh('images')
+            'data' => $news->fresh(['images', 'category'])
         ]);
     }
 
