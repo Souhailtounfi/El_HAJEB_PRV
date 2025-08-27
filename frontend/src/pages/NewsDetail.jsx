@@ -109,6 +109,7 @@ export default function NewsDetail() {
   const title = news ? (lang === "ar" ? news.title_ar : news.title_fr) : "";
   const content = news ? (lang === "ar" ? news.content_ar : news.content_fr) : "";
 
+  const isNewsEditor = !!user;
   return (
     <div
       dir={dir}
@@ -169,7 +170,7 @@ export default function NewsDetail() {
             </span>
           </div>
 
-          {user?.is_admin && news && (
+          {isNewsEditor && news && (
             <div className="flex flex-wrap gap-3">
               <Link
                 to={`/news/${news.id}/edit`}

@@ -1,14 +1,15 @@
+
 import React, { useState } from "react";
-import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import api from "../services/api";
 
 export default function CreateUser() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
-  const [fields, setFields] = useState({ name: "", email: "", password: "" });
+  const [fields, setFields] = useState({ name: "", email: "", password: "", is_admin: false });
   const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState("");
   const [ok, setOk] = useState(false);
@@ -16,8 +17,14 @@ export default function CreateUser() {
 
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setFields({ ...fields, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    if (name === "is_admin") {
+      setFields({ ...fields, is_admin: value === "true" });
+    } else {
+      setFields({ ...fields, [name]: value });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,9 +32,9 @@ export default function CreateUser() {
     setOk(false);
     setLoading(true);
     try {
-      await api.post("/users", { ...fields, is_admin: true });
+      await api.post("/users", fields);
       setOk(true);
-      setTimeout(() => navigate("/news"), 900);
+      setTimeout(() => navigate("/admins"), 900);
     } catch {
       setError(t("error_create_admin") || "Error creating admin");
     } finally {
@@ -176,6 +183,20 @@ export default function CreateUser() {
                     : "Afficher"}
                 </button>
               </div>
+
+              <div className="field-wrap relative md:col-span-2">
+                <label className={`float-label absolute ${dir === "rtl" ? "right-4" : "left-4"} top-3 px-1 text-[13px] text-gray-500 pointer-events-none`}>{t("role") || (lang === "ar" ? "الدور" : "Rôle")}</label>
+                <select
+                  name="is_admin"
+                  value={fields.is_admin ? "true" : "false"}
+                  onChange={handleChange}
+                  className="w-full mt-1 rounded-2xl border border-green-200 bg-white/70 px-4 pt-6 pb-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/60 focus:border-green-400 transition"
+                  required
+                >
+                  <option value="false">{t("admin", lang === "ar" ? "مدير" : "Admin")}</option>
+                  <option value="true">{t("strong_admin", lang === "ar" ? "مدير رئيسي" : "Admin principal")}</option>
+                </select>
+              </div>
             </div>
 
             {error && (
@@ -211,10 +232,10 @@ export default function CreateUser() {
               </button>
 
               <Link
-                to="/news"
+                to="/admins"
                 className="text-sm font-semibold text-green-700 hover:text-green-800 underline underline-offset-4"
               >
-                {lang === "ar" ? "رجوع للأخبار" : "Retour aux nouvelles"}
+                {lang === "ar" ? "رجوع للمدراء" : "Retour aux admins"}
               </Link>
             </div>
           </form>

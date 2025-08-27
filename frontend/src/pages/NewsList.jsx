@@ -30,7 +30,7 @@ export default function NewsList() {
   const [sort, setSort] = useState("newest");
   const [showAdminBoard, setShowAdminBoard] = useState(false); // toggle advanced admin table
   const [selected, setSelected] = useState([]); // selected ids in admin board
-  const isAdmin = !!user?.is_admin;
+  const isLoggedIn = !!user;
   const [filterHasImage, setFilterHasImage] = useState(false); // admin filter
   const [categoryFilter, setCategoryFilter] = useState("");
 
@@ -204,7 +204,7 @@ export default function NewsList() {
               <option value="newest">{lang === "ar" ? "الأحدث" : "Plus récent"}</option>
               <option value="oldest">{lang === "ar" ? "الأقدم" : "Plus ancien"}</option>
             </select>
-            {user?.is_admin && (
+            {isLoggedIn && (
               <Link to="/news/new" className="add-btn">
                 <span className="plus">＋</span>
                 {lang === "ar" ? "إضافة مقال" : "Ajouter Article"}
@@ -213,7 +213,7 @@ export default function NewsList() {
           </div>
         </div>
 
-        {isAdmin && (
+        {isLoggedIn && (
           <div className="admin-toggle-wrap">
             <button
               type="button"
@@ -243,22 +243,8 @@ export default function NewsList() {
           </div>
         )}
 
-        {/* Stats */}
-        {!loading && (
-          <div className="stats-bar">
-            <span className="badge">
-              {filtered.length} {lang === "ar" ? "نتيجة" : "résultats"}
-            </span>
-            {search && (
-              <button onClick={() => setSearch("")} className="clear">
-                {lang === "ar" ? "مسح البحث" : "Effacer"}
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Collapsible Admin Board */}
-        {isAdmin && (
+        {/* Admin Board */}
+        {isLoggedIn && (
           <div className={`admin-board-collapsible ${showAdminBoard? 'open':''}`}>
             <div className="admin-board">
               <div className="admin-toolbar glassy">
@@ -316,22 +302,41 @@ export default function NewsList() {
                     </thead>
                     <tbody>
                       {filtered.map(item => {
-                        const frLen = plain(item.content_fr||'').length;
-                        const arLen = plain(item.content_ar||'').length;
                         const cat = categories.find(c=>c.id===item.category_id);
                         return (
-                          <tr key={item.id} className={selected.includes(item.id)?'row-selected':''}>
-                            <td className="sel"><input type="checkbox" checked={selected.includes(item.id)} onChange={()=>toggleSelect(item.id)} aria-label={`select-${item.id}`} /></td>
-                            <td>{cat ? (lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)) : '—'}</td>
-                            <td className="ellipsis" title={item.title_fr}>{item.title_fr || '—'}</td>
-                            <td className="ellipsis" title={item.title_ar}>{item.title_ar || '—'}</td>
-                            <td><span className="pill small" title={`FR:${frLen} AR:${arLen}`}>{frLen}/{arLen}</span></td>
-                            <td>{ item.image_base64 || item.image ? <span className="pill ok">✔</span> : <span className="pill">—</span> }</td>
+                          <tr key={item.id}>
+                            <td className="sel">
+                              <input
+                                type="checkbox"
+                                checked={selected.includes(item.id)}
+                                onChange={() => toggleSelect(item.id)}
+                                aria-label="select"
+                              />
+                            </td>
+                            <td>{item.id}</td>
+                            <td>{cat ? (lang === 'ar' ? (cat.name_ar || cat.name_fr) : (cat.name_fr || cat.name_ar)) : ''}</td>
+                            <td>{item.title_fr}</td>
+                            <td>{item.title_ar}</td>
+                            <td>{plain(item.content_fr).length + plain(item.content_ar).length}</td>
+                            <td>{item.image_base64 ? <img src={item.image_base64} alt="" style={{width:40,height:40,objectFit:'cover',borderRadius:8}} /> : ''}</td>
                             <td>{formatDate(item.created_at)}</td>
-                            <td className="actions-cell">
-                              <Link to={`/news/${item.id}`} className="mini-btn view" title={lang==='ar'? 'عرض':'Voir'}>👁</Link>
-                              <Link to={`/news/${item.id}/edit`} className="mini-btn edit" title={lang==='ar'? 'تحرير':'Modifier'}>✎</Link>
-                              <button onClick={()=>handleDelete(item.id)} disabled={deletingId===item.id} className="mini-btn del" title={lang==='ar'? 'حذف':'Supprimer'}>{deletingId===item.id?'…':'✕'}</button>
+                            <td>
+                              <div className="actions-cell">
+                                <Link to={`/news/${item.id}/edit`} className="mini-btn edit">
+                                  {t("edit")}
+                                </Link>
+                                <button
+                                  className="mini-btn del"
+                                  onClick={() => handleDelete(item.id)}
+                                  disabled={deletingId === item.id}
+                                >
+                                  {deletingId === item.id
+                                    ? lang === "ar"
+                                      ? "جارٍ الحذف..."
+                                      : "Supp..."
+                                    : t("delete")}
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -344,7 +349,7 @@ export default function NewsList() {
           </div>
         )}
 
-        {/* Grid */}
+        {/* News List/Grid */}
         {loading ? (
           <div className="news-grid">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -422,7 +427,7 @@ export default function NewsList() {
                         </span>
                         <span className="shine" />
                       </Link>
-                      {user?.is_admin && (
+                      {isLoggedIn && (
                         <div className="admin-btns">
                           <Link to={`/news/${item.id}/edit`} className="edit-btn">
                             {t("edit")}

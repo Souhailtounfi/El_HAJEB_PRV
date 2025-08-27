@@ -112,9 +112,7 @@ export default function ContactsUtiles(){
       </section>
       <section className="cu-section fade-in">
         <h2>{t.useful}</h2>
-        <ul className="cu-list">
-          {t.list.map(([name,phone])=> <li key={name}><span className="n">{name}</span> : <span className="p">{phone}</span></li>)}
-        </ul>
+        <div className="cu-table-wrap"><table className="cu-table responsive-table cu-useful-table"><thead><tr><th>{isAr ? 'الجهة' : 'Organisme'}</th><th>{isAr ? 'الهاتف' : 'Téléphone'}</th></tr></thead><tbody>{t.list.map(([name,phone],i)=><tr key={i}><td data-label={isAr ? 'الجهة' : 'Organisme'}>{name}</td><td data-label={isAr ? 'الهاتف' : 'Téléphone'} className="p">{phone}</td></tr>)}</tbody></table></div>
       </section>
     </div>
   );
@@ -131,9 +129,10 @@ function ContactsStyle({dir}){return <style>{`
 .cu-table th{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;letter-spacing:.05em;}
 .cu-table tbody td{background:#fff;font-weight:600;color:#053826;}
 .cu-table tbody tr:nth-child(even) td{background:#ecfdf5;}
-.cu-list{margin:0;padding-${dir==='rtl'?'right':'left'}:1.15rem;display:flex;flex-direction:column;gap:.6rem;font-size:.8rem;font-weight:600;}
-.cu-list .n{font-style:italic;}
-.cu-list .p{color:#065f46;}
+.cu-useful-table th{background:linear-gradient(135deg,#38b000,#059669);font-size:1.01em;}
+.cu-useful-table td.p{font-family:monospace,Consolas,'Segoe UI',sans-serif;font-size:.98em;letter-spacing:.01em;}
+.cu-useful-table tr:hover td{background:#e0f7ef!important;transition:background .18s;}
+.cu-list{display:none;}
 @media (max-width:780px){
   .cu-section{padding:1.3rem 1.05rem 1.8rem;}
   .cu-table{min-width:0;font-size:.86rem;}
@@ -141,7 +140,6 @@ function ContactsStyle({dir}){return <style>{`
   .responsive-table tbody tr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.55rem;border:1px solid #10b98133;background:#fff;margin-bottom:.85rem;padding:.75rem .8rem;border-radius:1.05rem;box-shadow:0 8px 22px -12px rgba(0,0,0,.22);} 
   .responsive-table td{border:none!important;padding:.38rem .45rem;background:transparent!important;display:flex;flex-direction:column;gap:.2rem;font-size:.82rem;line-height:1.35;}
   .responsive-table td:before{content:attr(data-label);font-size:.66rem;font-weight:700;color:#047857;letter-spacing:.02em;}
-  .cu-list{font-size:.88rem;}
 }
 @media (prefers-reduced-motion:no-preference){.fade-in{opacity:0;animation:fadeIn .85s ease forwards;transform:translateY(10px);} @keyframes fadeIn{to{opacity:1;transform:none;}}}
 `}</style>;}

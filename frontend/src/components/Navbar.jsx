@@ -45,6 +45,13 @@ export default function FuturisticNavbar() {
   const dropdownTimer = useRef(null);
   const desktopNavRef = useRef(null);
   const mobileMenuRef = useRef(null); // mobile side panel ref
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1618);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1618);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   // removed old expanding height logic (side panel now fixed)
 
   const isAr = lang.startsWith("ar");
@@ -105,7 +112,7 @@ export default function FuturisticNavbar() {
   ];
   const singles = [
     { to: "/news", label: lang.startsWith("ar") ? "الأخبار" : "Actualités" },
-    ...(user?.is_admin ? [{ to: "/news/new", label: lang.startsWith("ar") ? "إضافة خبر" : t("add_news") }] : []),
+    ...(user ? [{ to: "/admins", label: lang.startsWith("ar") ? "المشرفون" : t("admins", "Admins") }] : []),
     ...(!user ? [{ to: "/login", label: lang.startsWith("ar") ? "تسجيل الدخول" : t("login") }] : []),
   ];
 
@@ -186,18 +193,40 @@ export default function FuturisticNavbar() {
     <nav className={`max-w-[1750px] mx-auto flex items-center px-2 sm:px-6 lg:px-4 py-1 ${isAdmin ? 'gap-0' : 'gap-2'}`} style={isAdmin ? {minHeight:48} : {}}>
           {/* Logo/brand left - moved more left with extra margin, even more for admin */}
           <Link to="/" className={`flex items-center gap-2 shrink-0 group ${isAdmin ? 'ml-[-32px] sm:ml-[-40px] me-1' : 'ml-[-10px] sm:ml-[-18px] me-2'}`} style={isAdmin ? {minWidth:120} : {}}>
-            <img src={logo} alt="Logo" className={isAdmin ? "h-7 w-auto transition-transform group-hover:scale-105" : "h-9 w-auto transition-transform group-hover:scale-105"} />
-            <span className={isAdmin ? "font-semibold text-green-800 text-[13px] tracking-tight whitespace-nowrap font-sans" : "font-semibold text-green-800 text-[15px] tracking-tight whitespace-nowrap font-sans"} style={{fontFamily:'Inter, Segoe UI, Arial, sans-serif', letterSpacing:'.01em'}}>
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className={
+                isAdmin ? "h-12 w-auto transition-transform group-hover:scale-110" : "h-14 w-auto transition-transform group-hover:scale-110"
+              }
+              style={{minWidth:54, marginRight: isAdmin ? 4 : 8}} 
+            />
+            <span
+              className={
+                isAr
+                  ? "font-extrabold text-green-800 text-[2.1rem] md:text-[2.4rem] tracking-tight whitespace-nowrap font-sans"
+                  : (isAdmin ? "font-semibold text-green-800 text-[13px] tracking-tight whitespace-nowrap font-sans" : "font-semibold text-green-800 text-[15px] tracking-tight whitespace-nowrap font-sans")
+              }
+              style={
+                isAr
+                  ? {fontFamily:'Tajawal, Cairo, Inter, Segoe UI, Arial, sans-serif', letterSpacing:'.01em', lineHeight:1.1}
+                  : {fontFamily:'Inter, Segoe UI, Arial, sans-serif', letterSpacing:'.01em'}
+              }
+            >
               {lang.startsWith("ar") ? "إقليم الحاجب" : "Province El Hajeb"}
             </span>
           </Link>
 
           {/* Main nav (center, hidden on mobile) */}
-          <div className={`hidden lg:flex flex-1 justify-center items-center ${isAdmin ? 'gap-0.5' : 'gap-0.5'}`} style={isAdmin ? {fontSize:'11px', paddingLeft:0, paddingRight:0, minWidth:0} : {}}>
+          {/* Use mobile nav for widths <1694px, desktop otherwise */}
+          {!isMobile && (
+            <div className="flex flex-1 justify-center items-center gap-0.5">
             {groups.map(g => {
               const isOpen = openGroup === g.key;
               const activeChild = g.items.some(i => location.pathname.startsWith(i.to));
               const active = activeChild || location.pathname.startsWith(g.to);
+              // Arabic font size larger
+              const navFontSize = isAr ? '17px' : '13px';
               return (
                 <div
                   key={g.key}
@@ -214,18 +243,19 @@ export default function FuturisticNavbar() {
                 >
                   <button
                     type="button"
-                    className={`px-${isAdmin ? '2' : '3'} py-${isAdmin ? '1' : '1.5'} rounded font-medium text-green-900 hover:bg-green-50 focus:bg-green-100 transition border-b-2 ${active ? "border-green-600 bg-green-50" : "border-transparent"} ${isAdmin ? 'text-[11px]' : 'text-[12.5px]'} font-sans tracking-tight flex items-center justify-between min-w-[0]`}
+                    className={`px-3 py-1.5 rounded font-medium text-green-900 hover:bg-green-50 focus:bg-green-100 transition font-sans tracking-tight flex items-center justify-between min-w-[0] futuristic-underline-btn ${active ? "futuristic-underline-active" : ""}`}
                     onClick={() => setOpenGroup(isOpen ? null : g.key)}
                     aria-haspopup="true"
                     aria-expanded={isOpen}
-                    style={isAdmin ? {fontFamily:'Inter, Segoe UI, Arial, sans-serif', paddingLeft:8, paddingRight:8, minWidth:0} : {fontFamily:'Inter, Segoe UI, Arial, sans-serif'}}
+                    style={{fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize: navFontSize, position:'relative'}}
                   >
                     <span className="truncate flex-1 text-left">{g.label}</span>
                     <svg className="ml-1 w-4 h-4 text-green-700 flex-shrink-0" style={{verticalAlign:'middle', display:'inline-block'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    <span className="futuristic-underline" />
                   </button>
                   <div
                     className={`absolute left-0 mt-2 min-w-[200px] bg-white border border-green-100 rounded shadow-lg py-2 z-50 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-2'}`}
-                    style={isAdmin ? {fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize:'11px', fontWeight:500, letterSpacing:'.01em'} : {fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize:'12px', fontWeight:500, letterSpacing:'.01em'}}
+                    style={{fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize: navFontSize, fontWeight:500, letterSpacing:'.01em'}}
                     onMouseEnter={() => {
                       clearTimeout(dropdownTimer.current);
                       setOpenGroup(g.key);
@@ -240,9 +270,9 @@ export default function FuturisticNavbar() {
                       <NavLink
                         key={i.to}
                         to={i.to}
-                        className={({ isActive }) => `block px-3 py-2 text-green-900 hover:bg-green-50 rounded transition ${isAdmin ? 'text-[10.5px]' : 'text-[12px]'} ${isActive ? "bg-green-100 font-semibold" : ""}`}
+                        className={({ isActive }) => `block px-3 py-2 text-green-900 hover:bg-green-50 rounded transition ${isActive ? "bg-green-100 font-semibold" : ""}`}
                         onClick={() => setOpenGroup(null)}
-                        style={isAdmin ? {fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize:'11px'} : {fontFamily:'Inter, Segoe UI, Arial, sans-serif'}}
+                        style={{fontFamily:'Inter, Segoe UI, Arial, sans-serif', fontSize: navFontSize}}
                       >
                         {i.label}
                       </NavLink>
@@ -251,23 +281,32 @@ export default function FuturisticNavbar() {
                 </div>
               );
             })}
-            {singles.map(s => (
-              <NavLink
-                key={s.to}
-                to={s.to}
-                className={({ isActive }) => `${isAdmin ? 'px-2 py-1 text-[11px]' : 'px-4 py-2 text-[13px]'} font-bold rounded-none text-green-900 hover:bg-green-50 focus:bg-green-100 border-b-2 transition ${isActive ? "border-green-600 bg-green-50" : "border-transparent"}`}
-                style={isAdmin ? {minWidth:0, fontSize:'11px'} : {}}
-              >
-                {s.label}
-              </NavLink>
-            ))}
-            {user?.is_admin && (
-              <NavLink to="/users" className={({ isActive }) => `${isAdmin ? 'px-2 py-1 text-[11px]' : 'px-4 py-2 text-[13px]'} font-bold rounded-none text-blue-800 hover:bg-blue-50 border-b-2 transition ${isActive ? "border-blue-600 bg-blue-50" : "border-transparent"}`}>{lang.startsWith("ar") ? "إنشاء مدير" : "Créer Admin"}</NavLink>
-            )}
+            {singles.map(s => {
+              const isLogin = s.to === "/login";
+              const isNews = s.to === "/news";
+              return (
+                <NavLink
+                  key={s.to}
+                  to={s.to}
+                  className={({ isActive }) =>
+                    isLogin
+                      ? `connexion-btn px-4 py-2 font-bold rounded-full text-green-900 border-2 border-green-700 bg-white hover:bg-green-50 focus:bg-green-100 transition` + (isActive ? " connexion-btn-active" : "")
+                      : isNews
+                        ? `px-4 py-2 font-bold rounded-none text-green-900 hover:bg-green-50 focus:bg-green-100 transition actualites-underline-btn ${isActive ? "actualites-underline-active" : ""}`
+                        : `px-4 py-2 font-bold rounded-none text-green-900 hover:bg-green-50 focus:bg-green-100 transition`
+                  }
+                  style={{fontSize: isAr ? '17px' : '13px'}}
+                >
+                  {s.label}
+                  {isNews && <span className="actualites-underline" />}
+                </NavLink>
+              );
+            })}
             {user && (
-              <button onClick={logout} className={`${isAdmin ? 'px-2 py-1 text-[11px]' : 'px-4 py-2 text-[13px]'} font-bold rounded-none text-red-700 hover:bg-red-50 border-b-2 border-transparent transition`}>{lang.startsWith("ar") ? "تسجيل الخروج" : t("logout")}</button>
+              <button onClick={logout} className="px-4 py-2 font-bold rounded-none text-red-700 hover:bg-red-50 border-b-2 border-transparent transition" style={{fontSize: isAr ? '17px' : '13px'}}>{lang.startsWith("ar") ? "تسجيل الخروج" : t("logout")}</button>
             )}
-          </div>
+            </div>
+          )}
 
           {/* Search bar (center/right, hidden on mobile) */}
           <form onSubmit={submitSearch} className="hidden lg:flex items-center ms-4 me-4 w-[180px] bg-green-50 rounded-full px-2 py-1 shadow-sm focus-within:ring-2 focus-within:ring-green-300 transition animated-search-bar-glow" style={{position:'relative', zIndex:1, marginRight:'1.25rem', marginLeft:'0.5rem'}}>
@@ -300,6 +339,44 @@ export default function FuturisticNavbar() {
           50% { background: linear-gradient(90deg,#ffd60a,#38b000,#0081a7,#ffd60a) border-box; box-shadow: 0 0 8px 2px #ffd60a44; }
           75% { background: linear-gradient(90deg,#38b000,#ffd60a,#0081a7,#38b000) border-box; box-shadow: 0 0 8px 2px #38b00044; }
           100% { background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000) border-box; box-shadow: 0 0 8px 2px #38b00044; }
+        }
+        .futuristic-underline-btn {
+          position: relative;
+          overflow: visible;
+        }
+        .futuristic-underline {
+          position: absolute;
+          left: 18%;
+          right: 18%;
+          bottom: 4px;
+          height: 2.5px;
+          background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000);
+          border-radius: 2px;
+          opacity: 0;
+          transform: scaleX(0.4);
+          transition: opacity 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1);
+          z-index: 1;
+          pointer-events: none;
+        }
+        .futuristic-underline-btn:hover .futuristic-underline,
+        .futuristic-underline-btn:focus .futuristic-underline,
+        .futuristic-underline-active .futuristic-underline {
+          opacity: 1;
+          transform: scaleX(1);
+        }
+        .connexion-btn {
+          background: #fff;
+          color: #166534;
+          border: 2px solid #166534;
+          box-shadow: 0 2px 8px #38b00011;
+          font-family: 'Inter, Segoe UI, Arial, sans-serif';
+          letter-spacing: .04em;
+          transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+        }
+        .connexion-btn:hover, .connexion-btn:focus {
+          background: #e6f4ea;
+          color: #00813a;
+          box-shadow: 0 4px 16px #38b00022;
         }
         .search-input-icon {
           position: absolute;
@@ -365,7 +442,8 @@ export default function FuturisticNavbar() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex lg:hidden ms-auto">
+          {isMobile && (
+            <div className="flex ms-auto">
             <button
               type="button"
               aria-label={mobileOpen ? (lang.startsWith('ar')? 'إغلاق القائمة':'Fermer le menu') : (lang.startsWith('ar')? 'فتح القائمة':'Ouvrir le menu')}
@@ -375,14 +453,15 @@ export default function FuturisticNavbar() {
               <svg className={`w-7 h-7 transition-transform ${mobileOpen ? 'scale-0' : 'scale-100'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none"><path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h10" /></svg>
               <svg className={`w-7 h-7 absolute transition-transform ${mobileOpen ? 'scale-100' : 'scale-0'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" /></svg>
             </button>
-          </div>
+            </div>
+          )}
         </nav>
       </header>
       {/* News ticker now appears below navbar */}
       <NavNewsTicker lang={lang} />
 
       {/* Mobile slide-in menu */}
-      {mobileOpen && (
+  {isMobile && mobileOpen && (
         <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex">
           <div className="w-4/5 max-w-xs bg-white shadow-xl h-full flex flex-col p-4 animate-slideInLeft relative">
             <button className="absolute top-3 right-3 text-green-700 hover:text-green-900" onClick={()=> setMobileOpen(false)} aria-label={lang.startsWith('ar')? 'إغلاق':'Fermer'}>
@@ -431,9 +510,17 @@ export default function FuturisticNavbar() {
                   {s.label}
                 </NavLink>
               ))}
-              {user?.is_admin && (
-                <NavLink to="/users" className={({ isActive }) => `block px-3 py-2 font-bold text-blue-800 rounded hover:bg-blue-50 transition ${isActive ? 'bg-blue-100 font-bold' : ''}`} onClick={() => setMobileOpen(false)}>{lang.startsWith("ar") ? "إنشاء مدير" : "Créer Admin"}</NavLink>
-              )}
+              <div className="border-t border-green-100 my-2" />
+              {singles.map(s => (
+                <NavLink
+                  key={s.to}
+                  to={s.to}
+                  className={({ isActive }) => `block px-3 py-2 font-bold text-green-900 rounded hover:bg-green-50 transition ${isActive ? 'bg-green-100 font-bold' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {s.label}
+                </NavLink>
+              ))}
               {user && (
                 <button onClick={() => { logout(); setMobileOpen(false); }} className="block w-full text-left px-3 py-2 font-bold text-red-700 rounded hover:bg-red-50 transition">{lang.startsWith("ar") ? "تسجيل الخروج" : t("logout")}</button>
               )}

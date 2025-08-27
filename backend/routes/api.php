@@ -29,17 +29,28 @@ Route::get('/news/{id}', [NewsController::class, 'show']);
 
 
 // Authenticated (personal access token) routes
+
+// Authenticated (personal access token) routes
 Route::middleware(['auth:sanctum'])->group(function () {
-
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    Route::middleware(['admin'])->group(function () {
-        Route::post('/news', [NewsController::class, 'store']);
-        Route::put('/news/{id}', [NewsController::class, 'update']);
-        Route::delete('/news/{id}', [NewsController::class, 'destroy']);
-    // Route model binding expects {news} not {id}
+    // News management for any logged-in user
+    Route::post('/news', [NewsController::class, 'store']);
+    Route::put('/news/{id}', [NewsController::class, 'update']);
+    Route::delete('/news/{id}', [NewsController::class, 'destroy']);
     Route::post('/news/{news}/images', [NewsImageController::class, 'store']); // upload multiple extra images
-        Route::delete('/news-images/{id}', [NewsImageController::class, 'destroy']);
-    });
+    Route::delete('/news-images/{id}', [NewsImageController::class, 'destroy']);
+});
 
+
+
+// Allow all authenticated users to see the users list
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
+});
+
+// Only strong admins can update/delete users
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::put('/users/{id}/password', [UserController::class, 'resetPassword']);
 });

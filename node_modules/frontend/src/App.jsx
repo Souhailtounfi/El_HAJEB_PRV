@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import NewsDetail from "./pages/NewsDetail";
 import Footer from "./components/Footer";
+import Admins from "./pages/Admins";
 import CreateUser from "./pages/CreateUser";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -53,9 +54,18 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/news" element={<NewsList lang={lang} />} />
               <Route path="/news/:id" element={<NewsDetail lang={lang} />} />
-              {/* Admin Create Admin Route (protected) */}
+              {/* Admins management page (protected, strong admin only) */}
               <Route
-                path="/users"
+                path="/admins"
+                element={
+                  <ProtectedRoute>
+                    <Admins />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Create User page (protected, strong admin only) */}
+              <Route
+                path="/create-user"
                 element={
                   <ProtectedRoute adminOnly>
                     <CreateUser />
@@ -172,7 +182,7 @@ function App() {
               <Route
                 path="/news/new"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute>
                     <NewsForm />
                   </ProtectedRoute>
                 }
@@ -180,7 +190,7 @@ function App() {
               <Route
                 path="/news/:id/edit"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute>
                     <NewsForm />
                   </ProtectedRoute>
                 }
@@ -188,7 +198,7 @@ function App() {
               <Route
                 path="/news/:id/images"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute>
                     <NewsForm />
                   </ProtectedRoute>
                 }
@@ -196,7 +206,7 @@ function App() {
               <Route
                 path="/news-images/:id"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute>
                     <NewsForm />
                   </ProtectedRoute>
                 }
