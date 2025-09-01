@@ -11,7 +11,7 @@ const Footer = () => {
   // Map to existing defined routes
   const quickLinks = [
     { to: "/", label: lang === "ar" ? "الرئيسية" : "Accueil" },
-    { to: "/presentation-generale", label: lang === "ar" ? "من نحن" : "À propos" },
+    { to: "/presentation-generale/apercu-historique", label: lang === "ar" ? "من نحن" : "À propos" },
     { to: "/news", label: lang === "ar" ? "الأخبار" : "Actualités" },
     { to: "/secteurs-productifs/contacts-utiles", label: lang === "ar" ? "اتصل بنا" : "Contact" }
   ];

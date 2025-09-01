@@ -124,11 +124,7 @@ export default function FuturisticNavbar() {
   useEffect(() => { document.documentElement.dir = dir; }, [dir]);
   useEffect(() => { setMobileOpen(false); setOpenGroup(null); }, [location.pathname]);
 
-  // Removed unused scroll effect
 
-  // ...existing code...
-
-  // FIX: clickOutside only for desktop (was closing mobile accordions accidentally)
   useEffect(() => {
     const clickOutside = e => {
       if (window.innerWidth < 1024) return; // ADDED GUARD
@@ -143,7 +139,6 @@ export default function FuturisticNavbar() {
     };
   }, []);
 
-  // BODY SCROLL LOCK when mobile menu open
   useEffect(()=>{
     if(mobileOpen){
       const prev = document.body.style.overflow;
@@ -152,7 +147,6 @@ export default function FuturisticNavbar() {
     }
   },[mobileOpen]);
 
-  // ESC close + focus management for side panel
   useEffect(()=>{
     if(!mobileOpen) return;
     const onKey = (e)=>{ if(e.key==='Escape') setMobileOpen(false); };
@@ -162,7 +156,6 @@ export default function FuturisticNavbar() {
     return ()=> document.removeEventListener('keydown', onKey);
   },[mobileOpen]);
 
-  // ...existing code...
 
   useEffect(() => {
     // Keep input synced only when landing / refreshing on /news
@@ -183,15 +176,12 @@ export default function FuturisticNavbar() {
     setOpenGroup(null);
   };
 
-  // ...existing code...
 
 
   return (
     <>
-      {/* --- WordPress-inspired, modern, smooth, responsive navbar --- */}
   <header className={`w-full shadow-md bg-white/90 backdrop-blur sticky top-0 z-50 border-b border-green-100${isAdmin ? ' admin-navbar' : ''}`}>
     <nav className={`max-w-[1750px] mx-auto flex items-center px-2 sm:px-6 lg:px-4 py-1 ${isAdmin ? 'gap-0' : 'gap-2'}`} style={isAdmin ? {minHeight:48} : {}}>
-          {/* Logo/brand left - moved more left with extra margin, even more for admin */}
           <Link to="/" className={`flex items-center gap-2 shrink-0 group ${isAdmin ? 'ml-[-32px] sm:ml-[-40px] me-1' : 'ml-[-10px] sm:ml-[-18px] me-2'}`} style={isAdmin ? {minWidth:120} : {}}>
             <img 
               src={logo} 
@@ -217,8 +207,6 @@ export default function FuturisticNavbar() {
             </span>
           </Link>
 
-          {/* Main nav (center, hidden on mobile) */}
-          {/* Use mobile nav for widths <1694px, desktop otherwise */}
           {!isMobile && (
             <div className="flex flex-1 justify-center items-center gap-0.5">
             {groups.map(g => {
@@ -308,7 +296,6 @@ export default function FuturisticNavbar() {
             </div>
           )}
 
-          {/* Search bar (center/right, hidden on mobile) */}
           <form onSubmit={submitSearch} className="hidden lg:flex items-center ms-4 me-4 w-[180px] bg-green-50 rounded-full px-2 py-1 shadow-sm focus-within:ring-2 focus-within:ring-green-300 transition animated-search-bar-glow" style={{position:'relative', zIndex:1, marginRight:'1.25rem', marginLeft:'0.5rem'}}>
       {/* Animated glowing border for search bar edges only */}
       <style>{`
@@ -499,17 +486,6 @@ export default function FuturisticNavbar() {
                   </div>
                 );
               })}
-              <div className="border-t border-green-100 my-2" />
-              {singles.map(s => (
-                <NavLink
-                  key={s.to}
-                  to={s.to}
-                  className={({ isActive }) => `block px-3 py-2 font-bold text-green-900 rounded hover:bg-green-50 transition ${isActive ? 'bg-green-100 font-bold' : ''}`}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {s.label}
-                </NavLink>
-              ))}
               <div className="border-t border-green-100 my-2" />
               {singles.map(s => (
                 <NavLink

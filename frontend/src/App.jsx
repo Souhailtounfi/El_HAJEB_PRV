@@ -11,7 +11,6 @@ import Admins from "./pages/Admins";
 import CreateUser from "./pages/CreateUser";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import PresentationGenerale from "./pages/PresentationGenerale";
 import ApercuHistorique from "./pages/ApercuHistorique";
 import SituationGeographique from "./pages/SituationGeographique";
 import OrganisationAdministrative from "./pages/OrganisationAdministrative";
@@ -73,10 +72,6 @@ function App() {
                 }
               />
               {/* Navbar Links section */}
-              <Route
-                path="/presentation-generale"
-                element={<PresentationGenerale />}
-              />
               <Route
                 path="/presentation-generale/apercu-historique"
                 element={<ApercuHistorique />}

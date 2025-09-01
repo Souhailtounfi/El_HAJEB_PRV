@@ -25,6 +25,8 @@ export default function ApercuHistorique() {
     intro: 'EL HAJEB aurait tiré son nom actuel de deux légendes :',
     b1: 'Historiquement, cette Province constituait une ceinture protectrice de la capitale Ismaïlite.',
     b2: 'Géographiquement, le relief montagneux d\'EL HAJEB, sculpté par les effets de l\'érosion, a toujours abrité des sources naturelles ("Hajbes") dont les deux principales : "Aïn Madani" et "Aïn Khadem".',
+    add:
+      "Dans le cadre des projets programmés du FSDR (Fond Spécial pour le Développement Rurale) institué à la suite du Discours de Feu Sa Majesté Hassan II, que Dieu L'ait en Sa Sainte Miséricorde à ERFOUD en 1974, la ville d'EL HAJEB non érigée encore en Province, avait bénéficié d'un projet financé par la banque Mondiale visant à développer l'agriculture en Bour dans le plateau d'EL HAJEB.\nMais, c'est à partir de 1991 que le cercle d'EL HAJEB érigé en Province a commencé à drainer ses premiers investissements en matière d’infrastructures de base.",
     c1:'Source naturelle',c2:'Source Aïn El Madani',c3:'Source Aïn Khadem'
   };
   const ar = {
@@ -32,6 +34,8 @@ export default function ApercuHistorique() {
     intro: 'يقال إن مدينة الحاجب استمدت اسمها الحالي من أسطورتين:',
     b1: 'تاريخياً شكّلت هذه المنطقة حزاماً واقياً للعاصمة الإسماعيلية.',
     b2: 'جغرافياً، ظلّ التضاريس الجبلية للحاجب، التي شكّلتها عوامل التعرية، تحتضن ينابيع طبيعية (الحواجب) من أهمها: عين المدني و عين خادم.',
+    add:
+      "في إطار المشاريع المبرمجة لصندوق التنمية القروية الخاص (FSDR) الذي أُحدث عقب خطاب جلالة المغفور له الحسن الثاني، طيب الله ثراه، في أرفود سنة 1974، استفادت مدينة الحاجب، التي لم تكن قد أصبحت بعد إقليماً، من مشروع ممول من البنك الدولي يهدف إلى تطوير الفلاحة البورية في هضبة الحاجب.\nغير أن انطلاقة الاستثمارات الأولى في مجال البنيات التحتية الأساسية بدأت فعلياً منذ سنة 1991، بعد ترقية دائرة الحاجب إلى إقليم.",
     c1:'منبع طبيعي',c2:'عين المدني',c3:'عين خادم'
   };
   const t = isAr ? ar : fr;
@@ -52,7 +56,8 @@ export default function ApercuHistorique() {
               <li>{t.b1}</li>
               <li>{t.b2}</li>
             </ul>
-            <div className="ap-gallery">
+            <p className="geo-p geo-additional" style={{marginTop:'1.7rem',marginBottom:'2.2rem',fontWeight:600,color:'#047857',fontSize:'1.01rem',whiteSpace:'pre-line'}}>{t.add}</p>
+            <div className="ap-gallery ap-gallery-vertical">
               {[{src:ap1,cap:t.c1},{src:ap2,cap:t.c2},{src:ap3,cap:t.c3}].map((im,i)=>(
                 <figure className="ap-fig" key={i}>
                   <div className="ap-media"><img src={im.src} alt={im.cap} loading="lazy" /></div>
@@ -88,22 +93,23 @@ function ApercuStyle() {
   .geo-article{position:relative;background:#fff;border:1px solid #e5e7eb;border-radius:2rem;padding:clamp(1.5rem,2.4vw,2.7rem);box-shadow:0 6px 18px rgba(0,0,0,0.08);}
   .geo-p{font-size:1rem;line-height:1.65;color:#1f2937;font-weight:500;margin:0 0 1rem;}
   .geo-intro{font-weight:700;color:#065f46;}
+  .geo-additional{margin-top:1.7rem;margin-bottom:2.2rem;font-weight:600;color:#047857;font-size:1.01rem;white-space:pre-line;}
   .geo-list{margin:0 0 1.6rem;padding-inline-start:1.3rem;display:grid;gap:.55rem;color:#065f46;font-weight:500;}
   [dir='rtl'] .geo-list{padding-inline-start:0;padding-inline-end:1.3rem;}
   .geo-list li::marker{color:#10b981;}
   
-  .ap-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2.6rem;}
-  .ap-fig{margin:0;display:flex;flex-direction:column;gap:.5rem;}
-  .ap-media{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:1.1rem;box-shadow:0 6px 20px -8px rgba(0,0,0,.18);background:#f1f5f9;}
+  .ap-gallery-vertical{display:flex;flex-direction:column;align-items:center;gap:2.1rem;margin-top:2.6rem;}
+  .ap-fig{margin:0;display:flex;flex-direction:column;gap:.5rem;align-items:center;}
+  .ap-media{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:1.1rem;box-shadow:0 6px 20px -8px rgba(0,0,0,.18);background:#f1f5f9;width:clamp(280px,60vw,700px);max-width:100vw;}
   .ap-media img{width:100%;height:100%;object-fit:cover;display:block;}
   .ap-fig figcaption{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:#065f46;text-align:center;}
   
   @media (max-width:900px){
     .pg-shell.geo-static-shell{padding:4.5rem 1rem 5rem;}
     .geo-article{padding:1.4rem 1.2rem 1.9rem;}
-  .ap-gallery{gap:1rem;margin-top:2.2rem;}
-  .ap-fig{gap:.45rem;}
-  .ap-media{border-radius:1rem;}
+    .ap-gallery-vertical{gap:1.2rem;margin-top:2.2rem;}
+    .ap-fig{gap:.45rem;}
+    .ap-media{border-radius:1rem;}
   }
   `}</style>
   );

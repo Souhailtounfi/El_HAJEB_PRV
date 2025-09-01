@@ -45,6 +45,7 @@ export default function Home() {
       frTxt:
         "Forêts, sources, reliefs du Moyen Atlas et biodiversité remarquable.",
       arTxt: "غابات وينابيع وتنوع طبيعي في قلب الأطلس المتوسط.",
+      to: "/presentation-generale/milieu-naturel"
     },
     {
       icon: "🚧",
@@ -53,6 +54,7 @@ export default function Home() {
       frTxt:
         "Réseau routier, eau potable, énergie et équipements publics structurants.",
       arTxt: "شبكة طرق وماء صالح للشرب وطاقة ومرافق عمومية مهيكلة.",
+      to: "/infrastructures-base/reseau-routier"
     },
     {
       icon: "👥",
@@ -60,6 +62,7 @@ export default function Home() {
       ar: "رأس مال بشري نشِط",
       frTxt: "Population jeune, formation et potentiel d'innovation.",
       arTxt: "سكان شباب، تكوين وإمكانات للابتكار.",
+      to: "/infrastructures-base/habitat"
     },
     {
       icon: "🌾",
@@ -67,6 +70,7 @@ export default function Home() {
       ar: "اقتصاد منتج",
       frTxt: "Agriculture, artisanat, tourisme rural & filières locales.",
       arTxt: "فلاحة وصناعة تقليدية وسياحة قروية وقطاعات محلية.",
+      to: "/secteurs-productifs/agriculture"
     },
   ];
 
@@ -244,9 +248,12 @@ export default function Home() {
 
             <div className="lg:col-span-6 grid sm:grid-cols-2 gap-5">
               {highlights.map((h, i) => (
-                <div
+                <Link
                   key={i}
-                  className="glass-tile rounded-3xl p-6 flex flex-col gap-3 shadow-sm ring-1 ring-green-100/60 hover:ring-green-200 group"
+                  to={h.to}
+                  className="glass-tile rounded-3xl p-6 flex flex-col gap-3 shadow-sm ring-1 ring-green-100/60 hover:ring-green-200 group focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+                  tabIndex={0}
+                  aria-label={lang === "ar" ? h.ar : h.fr}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{h.icon}</span>
@@ -257,28 +264,23 @@ export default function Home() {
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-3">
                     {lang === "ar" ? h.arTxt : h.frTxt}
                   </p>
-                  <div className="mt-auto pt-1">
-                    <Link
-                      to="/presentation-generale/apercu-historique"
-                      className="text-[11px] font-semibold tracking-wide text-green-600 group-hover:text-green-700 inline-flex items-center gap-1"
+                  <div className="mt-auto pt-1 text-[11px] font-semibold tracking-wide text-green-600 group-hover:text-green-700 inline-flex items-center gap-1">
+                    {lang === "ar" ? "المزيد" : "En savoir plus"}
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
                     >
-                      {lang === "ar" ? "المزيد" : "En savoir plus"}
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </Link>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
         </div>
@@ -412,13 +414,13 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              to="/secteur-productif"
+              to="/secteurs-productifs/investissements"
               className="px-7 py-3 rounded-full bg-white text-green-700 font-semibold text-sm shadow hover:-translate-y-0.5 hover:shadow-lg transition"
             >
               {lang === "ar" ? "القطاعات الإنتاجية" : "Secteurs productifs"}
             </Link>
             <Link
-              to="/secteurs-sociaux"
+              to="/secteurs-sociaux/entraide-associatif"
               className="px-7 py-3 rounded-full bg-green-900/40 ring-1 ring-white/30 font-semibold text-sm hover:bg-green-900/55 backdrop-blur transition"
             >
               {lang === "ar" ? "القطاعات الاجتماعية" : "Secteurs sociaux"}
