@@ -74,17 +74,14 @@ const Footer = () => {
 
             <div className="space-y-5">
               <h3 className="font-semibold text-lg tracking-wide">
-                {lang === "ar" ? "اتصل بنا" : t("contact_us")}
+                {lang === "ar" ? "اتصل بنا" : t("contactez-nous")}
               </h3>
               <ul className="space-y-3 text-sm text-green-100">
                 <li className="flex gap-3">
                   <span className="text-green-200">📞</span>
                   <span>035-54-36-71/72/73</span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="text-green-200">✉️</span>
-                  <span>contact@elhajeb.ma</span>
-                </li>
+                
                 <li className="flex gap-3">
                   <span className="text-green-200">📍</span>
                   <span>
@@ -159,16 +156,7 @@ const Footer = () => {
               </span>
              
             </div>
-            <div className="flex gap-4">
-              {["Facebook","Twitter","Instagram"].map(n=>(
-                <a key={n} href="#" aria-label={n} className="relative group">
-                  <span className="absolute -inset-2 rounded-full bg-white/0 group-hover:bg-white/10 transition" />
-                  <div className="h-6 w-6 rounded-full bg-white/15 flex items-center justify-center text-green-50 text-[11px] font-bold group-hover:bg-white/25 transition">
-                    {n[0]}
-                  </div>
-                </a>
-              ))}
-            </div>
+            
           </div>
         </div>
       </div>

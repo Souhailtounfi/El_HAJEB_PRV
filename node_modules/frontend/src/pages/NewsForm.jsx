@@ -34,7 +34,6 @@ export default function NewsForm() {
     api.get('/categories').then(res => {
       setCategories(res.data || []);
     });
-    // eslint-disable-next-line
   }, []);
   const mainInputRef = useRef(null);
   const galleryInputRef = useRef(null);

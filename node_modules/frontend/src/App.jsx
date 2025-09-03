@@ -48,8 +48,8 @@ function App() {
           <Navbar lang={lang} setLang={setLang} />
           <main className="app-main flex-1">
             <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
+              {/* Confidential Login Route (hidden from UI, accessible via secret path and shortcut Ctrl+Alt+A) */}
+              <Route path="/_admin-prvc-login-2025" element={<Login />} />
               <Route path="/" element={<Home />} />
               <Route path="/news" element={<NewsList lang={lang} />} />
               <Route path="/news/:id" element={<NewsDetail lang={lang} />} />

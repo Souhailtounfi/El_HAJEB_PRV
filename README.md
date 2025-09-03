@@ -1,66 +1,66 @@
-# 🌆 CITY-WEBSITE
+# 🌆 Province-El-Hajeb-WEBSITE
 
-**Transforming Cities, Empowering Communities, Inspiring Innovation**
+**Transformer les villes, autonomiser les communautés, inspirer l’innovation**
 
-![Last Commit](https://img.shields.io/github/last-commit/YourUsername/city-website?color=green)
-![Languages](https://img.shields.io/github/languages/count/YourUsername/city-website)
-![Top Language](https://img.shields.io/github/languages/top/YourUsername/city-website?color=yellow)
-![Issues](https://img.shields.io/github/issues/YourUsername/city-website)
-![License](https://img.shields.io/github/license/YourUsername/city-website)
+![Dernier Commit](https://img.shields.io/github/last-commit/YourUsername/EL-Hajeb-website?color=green)  
+![Langages](https://img.shields.io/github/languages/count/YourUsername/EL-Hajeb-website)  
+![Langage Principal](https://img.shields.io/github/languages/top/YourUsername/EL-Hajeb-website?color=yellow)  
+![Issues](https://img.shields.io/github/issues/YourUsername/EL-Hajeb-website)  
+![Licence](https://img.shields.io/github/license/YourUsername/EL-Hajeb-website)  
 
 ---
 
-## 🚀 Built with the tools and technologies
+## 🚀 Construit avec les outils et technologies
 
-![Laravel](https://img.shields.io/badge/Laravel-12-red?logo=laravel) 
-![React](https://img.shields.io/badge/React-18-blue?logo=react) 
+![Laravel](https://img.shields.io/badge/Laravel-12-red?logo=laravel)  
+![React](https://img.shields.io/badge/React-18-blue?logo=react)  
 ![Vite](https://img.shields.io/badge/Vite-4-purple?logo=vite)  
-![MySQL](https://img.shields.io/badge/MySQL-8-blue?logo=mysql) 
+![MySQL](https://img.shields.io/badge/MySQL-8-blue?logo=mysql)  
 ![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-orange?logo=php)  
-![Composer](https://img.shields.io/badge/Composer-yellow?logo=composer) 
+![Composer](https://img.shields.io/badge/Composer-yellow?logo=composer)  
 ![NPM](https://img.shields.io/badge/NPM-9-red?logo=npm)  
 
 ---
 
-## 📑 Table of Contents
+## 📑 Table des matières
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Setup](#environment-setup)
-  - [Database](#database)
-  - [Usage](#usage)
-- [Testing](#-testing)
-- [License](#-license)
-
----
-
-## 📖 Overview
-
-**City-Website** is an open-source project built with **Laravel 12 (backend)** and **React + Vite (frontend)**, connected to a **MySQL database**.  
-It provides a modular architecture for **multilingual city portals**, including user authentication, role-based access, content management, and a modern frontend interface.  
+- [Aperçu](#-aperçu)  
+- [Fonctionnalités](#-fonctionnalités)  
+- [Démarrage rapide](#-démarrage-rapide)  
+  - [Prérequis](#prérequis)  
+  - [Installation](#installation)  
+  - [Configuration de l’environnement](#configuration-de-lenvironnement)  
+  - [Base de données](#base-de-données)  
+  - [Utilisation](#utilisation)  
+- [Tests](#-tests)  
+- [Licence](#-licence)  
 
 ---
 
-## ✨ Features
+## 📖 Aperçu
 
-- ✅ **Laravel 12 Backend** with models, controllers, middleware, and scalable configurations.  
-- ✅ **React + Vite Frontend** with Tailwind CSS and multilingual support.  
-- ✅ **MySQL Database** managed with phpMyAdmin.  
-- ✅ **Authentication & Security** with JWT / Sanctum.  
-- ✅ **Role-Based Access Control (RBAC)** for users and admins.  
-- ✅ **Multilingual Content Management** with media upload support.  
-- ✅ **Automated Testing** with PHPUnit (backend) and Jest (frontend).  
+**EL-Hajeb-Website** est un projet open-source construit avec **Laravel 12 (backend)** et **React + Vite (frontend)**, relié à une **base de données MySQL**.  
+Il offre une architecture modulaire pour les **portails urbains multilingues**, incluant l’authentification des utilisateurs, la gestion des rôles, la gestion de contenu et une interface moderne côté frontend.  
 
 ---
 
-## ⚙️ Getting Started
+## ✨ Fonctionnalités
 
-### ✅ Prerequisites
+- ✅ **Backend Laravel 12** avec modèles, contrôleurs, middleware et configurations extensibles.  
+- ✅ **Frontend React + Vite** avec Tailwind CSS et support multilingue.  
+- ✅ **Base de données MySQL** gérée avec phpMyAdmin.  
+- ✅ **Authentification & Sécurité** avec JWT / Sanctum.  
+- ✅ **Contrôle d’accès basé sur les rôles (RBAC)** pour utilisateurs et administrateurs.  
+- ✅ **Gestion multilingue du contenu** avec support du téléchargement de médias.  
+- ✅ **Tests automatisés** avec PHPUnit (backend) et Jest (frontend).  
 
-Make sure you have the following installed on your machine:
+---
+
+## ⚙️ Démarrage rapide
+
+### ✅ Prérequis
+
+Assurez-vous d’avoir installé sur votre machine :
 
 - [PHP >= 8.1](https://www.php.net/)  
 - [Composer](https://getcomposer.org/)  
@@ -73,8 +73,79 @@ Make sure you have the following installed on your machine:
 
 ### 📥 Installation
 
-Clone the repository:
 
+
+1️⃣ Installer les dépendances Laravel (backend)
 ```bash
-git clone https://github.com/YourUsername/city-website.git
-cd city-website
+composer install
+php artisan key:generate
+php artisan migrate
+
+```
+
+Installer les dépendances Node.js (frontend)
+```bash
+npm install
+npm run dev 
+```
+
+🔧 Configuration de l’environnement
+
+Créez un fichier .env en copiant .env.example et configurez vos identifiants MySQL, ainsi que les paramètres d’application Laravel.
+
+cp .env.example .env
+
+
+Puis :
+```bash
+php artisan migrate --seed
+```
+
+
+
+🗄️ Base de données
+
+Créez une base de données MySQL (par exemple province_hajeb).
+
+Configurez-la dans le fichier .env.
+
+Utilisez php artisan migrate --seed pour installer les tables avec des données de test.
+
+
+Utilisation
+
+Démarrer le backend (Laravel) :
+```bash
+php artisan serve
+```
+
+Démarrer le frontend (React + Vite) :
+```bash
+npm run dev
+```
+
+Accédez ensuite à l’application via http://localhost:5173.
+
+🔐 Accès à la page administrateur
+
+Pour accéder au panneau d’administration :
+
+Raccourci clavier : CTRL + ALT + A
+
+Lien direct : / _admin-prvc-login-2025
+
+Premiere connexion d'apres la base de donnee exemple :
+  Email : admin@example.com
+  mot de passe : password123
+
+
+🧪 Tests
+
+Backend (Laravel) :
+
+php artisan test
+
+
+Frontend (React) :
+
+npm run test

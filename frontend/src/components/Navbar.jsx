@@ -110,11 +110,25 @@ export default function FuturisticNavbar() {
       ],
     },
   ];
+  // Confidential login route
+  const confidentialLoginPath = "/_admin-prvc-login-2025";
   const singles = [
     { to: "/news", label: lang.startsWith("ar") ? "الأخبار" : "Actualités" },
     ...(user ? [{ to: "/admins", label: lang.startsWith("ar") ? "المشرفون" : t("admins", "Admins") }] : []),
-    ...(!user ? [{ to: "/login", label: lang.startsWith("ar") ? "تسجيل الدخول" : t("login") }] : []),
+    // Connexion button REMOVED from visible nav for security
+    // ...(!user ? [{ to: confidentialLoginPath, label: lang.startsWith("ar") ? "تسجيل الدخول" : t("login") }] : []),
   ];
+  // Secret keyboard shortcut for confidential login page
+  useEffect(() => {
+    const handler = (e) => {
+      // Ctrl+Alt+A (or Cmd+Alt+A on Mac)
+      if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === 'a') {
+        navigate(confidentialLoginPath);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [navigate]);
 
   useEffect(() => {
     const saved = localStorage.getItem("lang");
@@ -269,27 +283,24 @@ export default function FuturisticNavbar() {
                 </div>
               );
             })}
-            {singles.map(s => {
-              const isLogin = s.to === "/login";
-              const isNews = s.to === "/news";
-              return (
-                <NavLink
-                  key={s.to}
-                  to={s.to}
-                  className={({ isActive }) =>
-                    isLogin
-                      ? `connexion-btn px-4 py-2 font-bold rounded-full text-green-900 border-2 border-green-700 bg-white hover:bg-green-50 focus:bg-green-100 transition` + (isActive ? " connexion-btn-active" : "")
-                      : isNews
+              {singles.map(s => {
+                const isNews = s.to === "/news";
+                return (
+                  <NavLink
+                    key={s.to}
+                    to={s.to}
+                    className={({ isActive }) =>
+                      isNews
                         ? `px-4 py-2 font-bold rounded-none text-green-900 hover:bg-green-50 focus:bg-green-100 transition actualites-underline-btn ${isActive ? "actualites-underline-active" : ""}`
                         : `px-4 py-2 font-bold rounded-none text-green-900 hover:bg-green-50 focus:bg-green-100 transition`
-                  }
-                  style={{fontSize: isAr ? '17px' : '13px'}}
-                >
-                  {s.label}
-                  {isNews && <span className="actualites-underline" />}
-                </NavLink>
-              );
-            })}
+                    }
+                    style={{fontSize: isAr ? '17px' : '13px'}}
+                  >
+                    {s.label}
+                    {isNews && <span className="actualites-underline" />}
+                  </NavLink>
+                );
+              })}
             {user && (
               <button onClick={logout} className="px-4 py-2 font-bold rounded-none text-red-700 hover:bg-red-50 border-b-2 border-transparent transition" style={{fontSize: isAr ? '17px' : '13px'}}>{lang.startsWith("ar") ? "تسجيل الخروج" : t("logout")}</button>
             )}
@@ -312,20 +323,25 @@ export default function FuturisticNavbar() {
           z-index: 2;
           pointer-events: none;
           border: 2.5px solid transparent;
-          background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000) border-box;
+          background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000,#38b000,#0081a7,#ffd60a,#38b000);
+          background-size: 300% 100%;
+          background-position: 0% 0%;
           -webkit-mask:
             linear-gradient(#fff 0 0) padding-box, 
             linear-gradient(#fff 0 0);
           -webkit-mask-composite: xor;
           mask-composite: exclude;
-          animation: searchBarGlowAnim 3.5s linear infinite;
+          animation: searchBarGlowInfinite 3.5s linear infinite;
+          transition: box-shadow 0.35s cubic-bezier(.77,0,.18,1);
+          box-shadow: 0 0 12px 2px #38b00033, 0 0 0 1.5px #38b00022;
         }
-        @keyframes searchBarGlowAnim {
-          0% { background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000) border-box; box-shadow: 0 0 8px 2px #38b00044; }
-          25% { background: linear-gradient(90deg,#0081a7,#ffd60a,#38b000,#0081a7) border-box; box-shadow: 0 0 8px 2px #0081a744; }
-          50% { background: linear-gradient(90deg,#ffd60a,#38b000,#0081a7,#ffd60a) border-box; box-shadow: 0 0 8px 2px #ffd60a44; }
-          75% { background: linear-gradient(90deg,#38b000,#ffd60a,#0081a7,#38b000) border-box; box-shadow: 0 0 8px 2px #38b00044; }
-          100% { background: linear-gradient(90deg,#38b000,#0081a7,#ffd60a,#38b000) border-box; box-shadow: 0 0 8px 2px #38b00044; }
+        @keyframes searchBarGlowInfinite {
+          0% {
+            background-position: 0% 0%;
+          }
+          100% {
+            background-position: 100% 0%;
+          }
         }
         .futuristic-underline-btn {
           position: relative;

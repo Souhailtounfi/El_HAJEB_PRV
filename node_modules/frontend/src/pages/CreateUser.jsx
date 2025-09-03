@@ -18,7 +18,7 @@ export default function CreateUser() {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value} = e.target;
     if (name === "is_admin") {
       setFields({ ...fields, is_admin: value === "true" });
     } else {
